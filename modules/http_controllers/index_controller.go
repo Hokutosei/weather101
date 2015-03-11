@@ -2,9 +2,9 @@ package http_controllers
 
 import (
 	"fmt"
-	"net/http"
-	"log"
 	"html/template"
+	"log"
+	"net/http"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {

@@ -1,2 +1,16 @@
-# web102
-A small web app written in go and serve data from backend to angular front end
+# web102 framework
+A small bare minimum web app written in go that serve data from backend to angular front end
+
+### Backend
+
+* go
+* mongodb (default not implemented)
+* redis (default cache etc not implemented)
+
+### Frontend
+
+* angularjs
+* ngRoute
+* ngResource
+* less (compiler -> frontend)
+* twitter bootstrap

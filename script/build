@@ -1,0 +1,12 @@
+#!/bin/bash
+function jsonval {
+	echo "jsonval executed"
+    temp=`echo $json | sed 's/\\\\\//\//g' | sed 's/[{}]//g' | awk -v k="text" '{n=split($0,a,","); for (i=1; i<=n; i++) print a[i]}' | sed 's/\"\:\"/\|/g' | sed 's/[\,]/ /g' | sed 's/\"//g' | grep -w $version`
+    echo ${temp##*|}
+}
+ 
+json=`curl -s -X GET https://code.angularjs.org/1.3.14/version.json`
+version='version'
+angularurl=`jsonval`
+ 
+curl -s -X GET $angularurl

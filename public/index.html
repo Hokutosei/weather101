@@ -18,13 +18,12 @@
                 padding-bottom: 20px;
             }
         </style>
-        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/main.less" type="text/less">
 
 
     </head>
     <body>
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
           <div class="container">
             <div class="navbar-header">
               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -49,9 +48,7 @@
           </div>
         </nav>
 
-        <div ng-controller="MainController">
-            {{ tet }}
-        </div>
+        <div ng-view></div>
 
         <script src="js/vendor/jquery-1.11.1.min.js"></script>
         <script src="js/vendor/bootstrap.min.js"></script>
@@ -62,6 +59,7 @@
 
         <script src="js/app/app.js"></script>
         <script src="js/app/controller/index_controller.js"></script>
+        <script src="js/app/index/index_controller.js"></script>
 
 
         <script src="js/main.js"></script>

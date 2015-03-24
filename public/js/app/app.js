@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('web102', ['ngRoute', 'ngResource']);
+var app = angular.module('web102', ['ngRoute', 'ngResource', 'react']);
 
 app.config(function($routeProvider, $locationProvider) {
 

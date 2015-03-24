@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"web102/modules/database"
+	"weather101/modules/database"
+	"weather101/modules/weather"
 )
 
 var (
@@ -16,6 +17,8 @@ func main() {
 	startRoutes()
 
 	go database.StartMongoDb()
+
+	go weather.StartGettingWeather()
 
 	fmt.Println("server is listening to -->>", serverPort)
 	err := http.ListenAndServe(serverPort, nil)

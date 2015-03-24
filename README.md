@@ -4,7 +4,7 @@ A small bare minimum web app written in go that serve data from backend to angul
 ### Backend
 
 * go
-* mongodb (default not implemented)
+* mongodb 
 * redis (default cache etc not implemented)
 
 ### Frontend
@@ -14,3 +14,5 @@ A small bare minimum web app written in go that serve data from backend to angul
 * ngResource
 * less (compiler -> frontend)
 * twitter bootstrap
+* reactjs
+* JSXTransformer

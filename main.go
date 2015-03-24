@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"web102/modules/database"
 )
 
 var (
@@ -12,6 +14,8 @@ var (
 func main() {
 	initializeAssets()
 	startRoutes()
+
+	go database.StartMongoDb()
 
 	fmt.Println("server is listening to -->>", serverPort)
 	err := http.ListenAndServe(serverPort, nil)

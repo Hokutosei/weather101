@@ -13,7 +13,7 @@ import (
 
 var (
 	api_url     = "http://api.openweathermap.org/data/2.5/weather?q="
-	delay       = 59
+	delay       = 59	
 	loopCounter = 0
 )
 

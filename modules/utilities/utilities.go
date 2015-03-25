@@ -6,6 +6,8 @@ import (
 
 var (
 	kelvin float64 = 272.15
+	paddingMaxLen = 12
+	paddingMinLen = 5
 )
 
 func ConvertCelsius(temp float64) int {
@@ -16,30 +18,28 @@ func ConvertCelsius(temp float64) int {
 func InlinePrint(toPrint ...string) {
 	var printStr string
 	for _, str := range toPrint {
-		printStr += Stringify(str)
+		printStr += StringifyAndPadding(str)
 	}
 
-	// fmt.Println("saved!")
-	// fmt.Println("------------------------------", name, " took: ", time.Since(start_time))
 	fmt.Println("------------------------------ ", printStr)
 }
 
-func Stringify(str interface{}) string {
+func StringifyAndPadding(str interface{}) string {
 	initStr := fmt.Sprintf("%v ", str)
-	padMaxLen := 15
-	
+	padMaxLen := paddingMaxLen
+
 	var paddedStr string
 	
-	if len(initStr) < 5 {
-		padMaxLen = 5
+	if len(initStr) < paddingMinLen {
+		padMaxLen = paddingMinLen
 	}
 
-
+	// add padding
 	for i := 0; i < (padMaxLen - len(initStr)); i++ {
 		_ = i
 		paddedStr += " "
 	}
-	paddedStr += initStr
 
+	paddedStr += initStr
 	return paddedStr
 }

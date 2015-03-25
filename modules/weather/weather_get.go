@@ -13,7 +13,8 @@ import (
 
 var (
 	api_url = "http://api.openweathermap.org/data/2.5/weather?q="
-	delay   = 4
+	delay   = 30
+	loopCounter = 0
 )
 
 func getWeather(city ...string) {
@@ -42,7 +43,7 @@ func getWeather(city ...string) {
 			}
 
 			// fmt.Println(dat) # debug code
-			temp_str := fmt.Sprintf("%v C ", utilities.ConvertCelsius(dat.Main.Temp))
+			temp_str := fmt.Sprintf("temp: %v C ", utilities.ConvertCelsius(dat.Main.Temp))
 			toPrint := []string{
 				temp_str,
 				name,
@@ -73,6 +74,8 @@ func StartGettingWeather() {
 
 	for i := range time.Tick(time.Second * time.Duration(delay)) {
 		_ = i
+		loopCounter++
+		fmt.Println(time.Now().Format(time.RFC850), " counter: " , loopCounter)
 		mainWeatherGetter()
 	}
 }

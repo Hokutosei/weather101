@@ -70,8 +70,15 @@ func StartMongoDb() {
 	session = current_session
 }
 
+func SessionCopy() *mgo.Session {
+	return session.Copy()
+}
+
 func (w *WeatherData) SaveAndPrint(start_time time.Time, toPrint ...string) (bool, error) {
-	c := session.DB(dbName).C(weather_collection)
+	sc := SessionCopy()
+	c := sc.DB(dbName).C(weather_collection)
+	defer sc.Close()
+
 	w.CreatedAt = fmt.Sprintf("%v", time.Now().Local())
 	err := c.Insert(w)
 	if err != nil {

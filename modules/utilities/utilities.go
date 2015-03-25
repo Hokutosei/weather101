@@ -6,7 +6,7 @@ import (
 
 var (
 	kelvin        float64 = 272.15
-	paddingMaxLen         = 12
+	paddingMaxLen         = 13
 	paddingMinLen         = 5
 )
 
@@ -40,6 +40,6 @@ func StringifyAndPadding(str interface{}) string {
 		paddedStr += " "
 	}
 
-	paddedStr += initStr
+	paddedStr += initStr + " | "
 	return paddedStr
 }

@@ -1,21 +1,25 @@
 package weather
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	_ "net/http"
 	"time"
-	"io/ioutil"
-	"encoding/json"
+
+	"weather101/modules/database"
+	"weather101/modules/utilities"
 )
 
 var (
 	api_url = "http://api.openweathermap.org/data/2.5/weather?q="
-	delay = 4
+	delay   = 4
 )
 
 func getWeather(city ...string) {
 	for _, name := range city {
 		go func(name string) {
+			start := time.Now()
 			city_url := fmt.Sprintf("%v%v", api_url, name)
 
 			// http request
@@ -24,31 +28,51 @@ func getWeather(city ...string) {
 
 			// read response
 			contents, err := ioutil.ReadAll(response.Body)
-			if err!= nil {
+			if err != nil {
 				fmt.Println(err)
 				return
 			}
 
 			// put response data in struct
-			var dat WeatherData
+			// unmarshal json response to struct
+			var dat database.WeatherData
 			if err := json.Unmarshal(contents, &dat); err != nil {
 				fmt.Println(err)
 				return
 			}
 
-			fmt.Println(dat)
+			// fmt.Println(dat) # debug code
+			temp_str := fmt.Sprintf("%v C ", utilities.ConvertCelsius(dat.Main.Temp))
+			toPrint := []string{
+				temp_str,
+				name,
+			}
 
-			fmt.Println(response)
+			// save weather data to mongodb!
+			saved, err := dat.SaveAndPrint(start, toPrint...)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			// dead code
+			_ = saved
 
 		}(name)
 	}
 }
 
+func mainWeatherGetter() {
+	cities := []string{"akiruno-shi", "paranaque", "omiya-shi", "machida-shi"}
+	getWeather(cities...)
+}
+
 func StartGettingWeather() {
+	// get some initial data from start
+	// mainWeatherGetter()
 
 	for i := range time.Tick(time.Second * time.Duration(delay)) {
 		_ = i
-		cities := []string{ "akiruno-shi", "paranaque", "omiya-shi", "machida-shi" }
-		getWeather(cities...)		
+		mainWeatherGetter()
 	}
 }

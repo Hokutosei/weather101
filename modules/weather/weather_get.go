@@ -24,7 +24,11 @@ func getWeather(city ...string) {
 			city_url := fmt.Sprintf("%v%v", api_url, name)
 
 			// http request
-			response := httpGet(city_url)
+			response, err := httpGet(city_url)
+			if err != nil {
+				fmt.Println("has error: ", name)
+				return
+			}
 			defer response.Body.Close()
 
 			// read response

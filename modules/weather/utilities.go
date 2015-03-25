@@ -1,15 +1,24 @@
 package weather
 
 import (
-	_ "fmt"
+	"fmt"
+	"time"
 	"net/http"
 )
 
-func httpGet(city_url string) *http.Response {
-	response, err := http.Get(city_url)
+func httpGet(city_url string) (*http.Response, error) {
+	timeout := time.Duration(5 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+
+	response, err := client.Get(city_url)
 	if err != nil {
 		// do better error handling here
-		panic(err)
+		//panic(err)
+		fmt.Println(err)
+		var x *http.Response
+		return x, err
 	}
-	return response
+	return response, nil
 }

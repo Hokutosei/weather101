@@ -12,7 +12,7 @@ import (
 
 type WeatherResponse struct {
 	Status int
-	Data []database.AggregateWeather
+	Data   []database.AggregateWeather
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -37,9 +37,6 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(weathers)
-
 	response := &WeatherResponse{Status: 200, Data: weathers}
-	fmt.Println(response)
 	utilities.RespondObjectToJson(w, response)
 }

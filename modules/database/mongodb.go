@@ -94,11 +94,15 @@ func (w *WeatherData) SaveAndPrint(start_time time.Time, toPrint ...string) (boo
 }
 
 type AggregateWeather struct {
-	Name string
-	Sum int
+	Name  string `bson:"_id"`
+	Sum   int
+	Items []struct {
+		Temp      float64 `json:"temp"`
+		CreatedAt string  `bson:"created_at" json:"created_at"`
+	}
 }
 
-func (w *WeatherData) GetIndex() ([]AggregateWeather, error){
+func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	sc := SessionCopy()
 	c := sc.DB(dbName).C(weather_collection)
 	defer sc.Close()
@@ -106,10 +110,24 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error){
 	//db.weather.aggregate([{$group: {_id: "$name", items: {$push: {temp: "$main.temp"}}}}])
 	result := []AggregateWeather{}
 
-	query := []bson.M{{"$group": bson.M {"_id": "$name", "sum": bson.M{"$sum": 1}}},}
+	// aggregation query
+	// group by name, sum, and
+	// make an array of data that group by name
+	query := []bson.M{{"$group": bson.M{
+		"_id": "$name",
+		"sum": bson.M{"$sum": 1},
+		"items": bson.M{
+			"$push": bson.M{
+				"temp":       "$main.temp",
+				"created_at": "$created_at"}},
+	}},
+	}
 
+	start := time.Now()
+	err := c.Pipe(query).All(&result)
 
-	err:= c.Pipe(query).All(&result)
+	// benchmark how much time it took
+	fmt.Println("aggregate took: ", time.Since(start))
 	if err != nil {
 		fmt.Println(err)
 		return result, err

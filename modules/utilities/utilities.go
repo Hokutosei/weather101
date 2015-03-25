@@ -1,9 +1,9 @@
 package utilities
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"encoding/json"
 )
 
 var (
@@ -45,7 +45,6 @@ func StringifyAndPadding(str interface{}) string {
 	paddedStr += initStr + " | "
 	return paddedStr
 }
-
 
 func RespondObjectToJson(w http.ResponseWriter, object interface{}) {
 	js, err := json.Marshal(object)

@@ -2,8 +2,8 @@ package weather
 
 import (
 	"fmt"
-	"time"
 	"net/http"
+	"time"
 )
 
 func httpGet(city_url string) (*http.Response, error) {

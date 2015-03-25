@@ -5,9 +5,9 @@ import (
 )
 
 var (
-	kelvin float64 = 272.15
-	paddingMaxLen = 12
-	paddingMinLen = 5
+	kelvin        float64 = 272.15
+	paddingMaxLen         = 12
+	paddingMinLen         = 5
 )
 
 func ConvertCelsius(temp float64) int {
@@ -29,7 +29,7 @@ func StringifyAndPadding(str interface{}) string {
 	padMaxLen := paddingMaxLen
 
 	var paddedStr string
-	
+
 	if len(initStr) < paddingMinLen {
 		padMaxLen = paddingMinLen
 	}

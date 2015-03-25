@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	api_url = "http://api.openweathermap.org/data/2.5/weather?q="
-	delay   = 30
+	api_url     = "http://api.openweathermap.org/data/2.5/weather?q="
+	delay       = 59
 	loopCounter = 0
 )
 
@@ -75,7 +75,7 @@ func StartGettingWeather() {
 	for i := range time.Tick(time.Second * time.Duration(delay)) {
 		_ = i
 		loopCounter++
-		fmt.Println(time.Now().Format(time.RFC850), " counter: " , loopCounter)
+		fmt.Println(time.Now().Format(time.RFC850), " counter: ", loopCounter)
 		mainWeatherGetter()
 	}
 }

@@ -68,7 +68,7 @@ func getWeather(city ...string) {
 }
 
 func mainWeatherGetter() {
-	cities := []string{"akiruno-shi", "paranaque", "omiya-shi", "machida-shi"}
+	cities := []string{"akiruno-shi", "paranaque", "omiya-shi", "machida-shi", "akishima-shi"}
 	getWeather(cities...)
 }
 

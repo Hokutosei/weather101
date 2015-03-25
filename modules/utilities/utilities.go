@@ -2,6 +2,8 @@ package utilities
 
 import (
 	"fmt"
+	"net/http"
+	"encoding/json"
 )
 
 var (
@@ -43,3 +45,31 @@ func StringifyAndPadding(str interface{}) string {
 	paddedStr += initStr + " | "
 	return paddedStr
 }
+
+
+func RespondObjectToJson(w http.ResponseWriter, object interface{}) {
+	js, err := json.Marshal(object)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+//func ReadRequestPostRequest(r *http.Request) (database.UserEditParams, error) {
+//	query := r.URL.Query()
+//	fmt.Println(query["nickname"][0])
+//	decoder := json.NewDecoder(r.Body)
+//
+//	var data database.UserEditParams
+//	err := decoder.Decode(&data)
+//
+//	if err != nil {
+//		fmt.Println(err)
+//		return data, err
+//	}
+//	return data, nil
+//}

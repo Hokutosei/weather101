@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	mgo "gopkg.in/mgo.v2"
-	_ "gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2/bson"
 	"log"
 	"time"
 
@@ -91,4 +91,28 @@ func (w *WeatherData) SaveAndPrint(start_time time.Time, toPrint ...string) (boo
 	utilities.InlinePrint(toPrint...)
 
 	return true, nil
+}
+
+type AggregateWeather struct {
+	Name string
+	Sum int
+}
+
+func (w *WeatherData) GetIndex() ([]AggregateWeather, error){
+	sc := SessionCopy()
+	c := sc.DB(dbName).C(weather_collection)
+	defer sc.Close()
+
+	//db.weather.aggregate([{$group: {_id: "$name", items: {$push: {temp: "$main.temp"}}}}])
+	result := []AggregateWeather{}
+
+	query := []bson.M{{"$group": bson.M {"_id": "$name", "sum": bson.M{"$sum": 1}}},}
+
+
+	err:= c.Pipe(query).All(&result)
+	if err != nil {
+		fmt.Println(err)
+		return result, err
+	}
+	return result, nil
 }

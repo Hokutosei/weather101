@@ -11,4 +11,5 @@ func startRoutes() {
 	fmt.Println("starting routes..")
 
 	http.HandleFunc("/", http_controllers.Index)
+	http.HandleFunc("/get_index", http_controllers.GetIndex)
 }

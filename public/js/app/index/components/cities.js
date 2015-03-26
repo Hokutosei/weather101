@@ -1,8 +1,50 @@
 var CityList = React.createClass({
 	render: function() {
-		return <li>{ this.props.data.Name } { this.props.data.Sum }</li>;
+
+		return (
+            <li>
+                { this.props.data.Name } { this.props.data.Sum }
+                <Chart data={ this.props.data }/>
+            </li>
+        )
 	}
-})
+});
+
+var Chart = React.createClass({
+    renderChart: function() {
+        console.log(this.props)
+        console.log("debug---")
+        var node = this.refs.chartNode.getDomNode()
+            , dataSeries = this.props.data.Items;
+
+        jQuery(function($) {
+            $(node).highcharts({
+                chart: {
+                    plotBackgroundColor: "#EFEFEF",
+                    height: 300,
+                    type: 'bar'
+                },
+                series: dataSeries
+            })
+        })
+    },
+
+    componentWillReceiveProps: function(nextProps) {
+
+    },
+
+    shouldComponentUpdate: function(nextProps, nextState) {
+        return nextProps.data.Items.length > 0;
+    },
+
+    componentDidUpdate: function(nextProps) {
+        this.renderChart();
+    },
+
+    render: function() {
+        return React.DOM.div({className: "chart", ref: "chartNode" })
+    }
+});
 
 var Cities = React.createClass({
 	getInitialState: function() {
@@ -31,6 +73,6 @@ var Cities = React.createClass({
 			</ul>				
 		)
 	}
-})
+});
 
-app.value('Cities', Cities)
+app.value('Cities', Cities);

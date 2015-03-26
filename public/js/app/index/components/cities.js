@@ -1,6 +1,6 @@
 var CityList = React.createClass({
 	render: function() {
-		return <li>{ this.props.data.Name }</li>;
+		return <li>{ this.props.data.Name } { this.props.data.Sum }</li>;
 	}
 })
 

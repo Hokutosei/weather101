@@ -18,7 +18,7 @@ var (
 )
 
 type WeatherData struct {
-	CreatedAt string `bson:"created_at" json:"created_at"`
+	CreatedAt time.Time `bson:"created_at" json:"created_at"`
 	Base      string `json:"base"`
 	Clouds    struct {
 		All float64 `json:"all"`
@@ -79,7 +79,8 @@ func (w *WeatherData) SaveAndPrint(start_time time.Time, toPrint ...string) (boo
 	c := sc.DB(dbName).C(weather_collection)
 	defer sc.Close()
 
-	w.CreatedAt = fmt.Sprintf("%v", time.Now().Local())
+	// w.CreatedAt = fmt.Sprintf("%v", time.Now().Local())
+	w.CreatedAt = time.Now()
 	err := c.Insert(w)
 	if err != nil {
 		fmt.Println(err)

@@ -8,7 +8,7 @@ import (
 
 var (
 	kelvin        float64 = 272.15
-	paddingMaxLen         = 13
+	paddingMaxLen         = 15
 	paddingMinLen         = 5
 )
 
@@ -26,11 +26,12 @@ func InlinePrint(toPrint ...string) {
 	fmt.Println("------------------------------ ", printStr)
 }
 
+// transform string for aesthetic and readable in CLI
 func StringifyAndPadding(str interface{}) string {
+	var paddedStr string
+	
 	initStr := fmt.Sprintf("%v ", str)
 	padMaxLen := paddingMaxLen
-
-	var paddedStr string
 
 	if len(initStr) < paddingMinLen {
 		padMaxLen = paddingMinLen

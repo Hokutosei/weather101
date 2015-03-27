@@ -53,12 +53,43 @@ func (w *WeatherData) SaveAndPrint(start_time time.Time, toPrint ...string) (boo
 	return true, nil
 }
 
-type AggregateWeather struct {
-	Name  string `bson:"_id"`
-	Sum   int
-	Items []struct {
-		Temp      float64 `json:"temp"`
-		CreatedAt string  `bson:"created_at" json:"created_at"`
+func getAllCities() ([]Cities, error) {
+	sc := SessionCopy()
+	c := sc.DB(dbName).C(weather_collection)
+	defer sc.Close()
+
+	result := []Cities {}
+	query := []bson.M{{ "$group": bson.M{
+			"_id": "$name",
+		}},
+	}
+	err := c.Pipe(query).All(&result)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
+func getAllWeatherByCity(name string) {
+	start := time.Now()
+	sc := SessionCopy()
+	c := sc.DB(dbName).C(weather_collection)
+	defer sc.Close()
+
+	results := []WeatherData{}
+	query := bson.M{"name": name}
+	err := c.Find(query).All(&results)
+	_ = err
+	fmt.Println(len(results))
+	fmt.Println(time.Since(start))
+}
+
+func (w *WeatherData) GetWeatherData() {
+	cities, _ := getAllCities()
+	for _, city := range cities {
+		go func(name string) {
+			getAllWeatherByCity(name)
+		}(city.Name)
 	}
 }
 
@@ -66,6 +97,8 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	sc := SessionCopy()
 	c := sc.DB(dbName).C(weather_collection)
 	defer sc.Close()
+
+	// go GetWeatherData()
 
 	//db.weather.aggregate([{$group: {_id: "$name", items: {$push: {temp: "$main.temp"}}}}])
 	result := []AggregateWeather{}

@@ -46,3 +46,16 @@ type WeatherData struct {
 		Speed float64 `json:"speed"`
 	} `json:"wind"`
 }
+
+type AggregateWeather struct {
+	Name  string `bson:"_id"`
+	Sum   int
+	Items []struct {
+		Temp      float64 `json:"temp"`
+		CreatedAt string  `bson:"created_at" json:"created_at"`
+	}
+}
+
+type Cities struct {
+    Name string `bson:"_id"`
+}

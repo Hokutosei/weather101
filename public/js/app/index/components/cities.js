@@ -13,20 +13,60 @@ var CityList = React.createClass({
 var Chart = React.createClass({
     renderChart: function() {
         console.log(this.props)
+        console.log(this.refs)
         console.log("debug---")
-        var node = this.refs.chartNode.getDomNode()
+        var node = this.refs.chartNode.getDOMNode()
             , dataSeries = this.props.data.Items;
 
-        jQuery(function($) {
-            $(node).highcharts({
-                chart: {
-                    plotBackgroundColor: "#EFEFEF",
-                    height: 300,
-                    type: 'bar'
+        //console.log(d3)
+
+        var chartOptions = {
+
+            rangeSelector: {
+                selected: 4
+            },
+
+            yAxis: {
+                labels: {
+                    formatter: function () {
+                        return (this.value > 0 ? ' + ' : '') + this.value + '%';
+                    }
                 },
-                series: dataSeries
-            })
+                plotLines: [{
+                    value: 0,
+                    width: 2,
+                    color: 'silver'
+                }]
+            },
+
+            plotOptions: {
+                series: {
+                    compare: 'percent'
+                }
+            },
+
+            tooltip: {
+                valueDecimals: 2
+            },
+            chart: {
+                renderTo: { $set: node },
+                width: { $set: 400 },
+                height: { $set: 400 }
+            },
+            series: { $set: dataSeries }
+        };
+
+
+
+        var chartInstance = new Highcharts.Chart(chartOptions)
+        this.setState({
+            chartInstance: chartInstance
         })
+
+
+
+
+
     },
 
     componentWillReceiveProps: function(nextProps) {

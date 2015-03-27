@@ -48,8 +48,12 @@ func getWeather(city ...string) {
 
 			// fmt.Println(dat) # debug code
 			temp_str := fmt.Sprintf("temp: %v C ", utilities.ConvertCelsius(dat.Main.Temp))
+			weather_description := dat.Weather[0].Description
+
+			// output message
 			toPrint := []string{
 				temp_str,
+				weather_description,
 				name,
 			}
 

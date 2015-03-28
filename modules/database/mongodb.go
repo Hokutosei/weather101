@@ -106,7 +106,8 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	// aggregation query
 	// group by name, sum, and
 	// make an array of data that group by name
-	query := []bson.M{{"$group": bson.M{
+	query := []bson.M{
+		{"$group": bson.M{
 		"_id": "$name",
 		"sum": bson.M{"$sum": 1},
 		"items": bson.M{

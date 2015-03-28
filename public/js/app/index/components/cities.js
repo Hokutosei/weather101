@@ -49,19 +49,22 @@ var Chart = React.createClass({
                 valueDecimals: 2
             },
             chart: {
-                renderTo: { $set: node },
-                width: { $set: 400 },
-                height: { $set: 400 }
+                renderTo: node ,
+                width: 400 ,
+                height: 400
             },
-            series: { $set: dataSeries }
+            series: dataSeries
         };
 
 
-
-        var chartInstance = new Highcharts.Chart(chartOptions)
-        this.setState({
-            chartInstance: chartInstance
-        })
+        jQuery(function($) {
+            console.log("chart jquery initialized")
+            //$(node).highcharts(chartOptions)
+        });
+//        var chartInstance = new Highcharts.Chart(chartOptions)
+//        this.setState({
+//            chartInstance: chartInstance
+//        })
 
 
 

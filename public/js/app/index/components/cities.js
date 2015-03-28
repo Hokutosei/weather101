@@ -1,3 +1,6 @@
+// utility for debugger
+var log = function(str) { console.log(str); };
+
 var CityList = React.createClass({
 	render: function() {
 
@@ -58,8 +61,9 @@ var Chart = React.createClass({
 
 
         jQuery(function($) {
-            console.log("chart jquery initialized")
-            //$(node).highcharts(chartOptions)
+            console.log("chart jquery initialized");
+            log(chartOptions);
+            $(node).highcharts('StockChart', chartOptions)
         });
 //        var chartInstance = new Highcharts.Chart(chartOptions)
 //        this.setState({

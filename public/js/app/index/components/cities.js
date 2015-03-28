@@ -1,13 +1,19 @@
 // utility for debugger
 var log = function(str) { console.log(str); };
 
+function dateFormatter(date_str) {
+	var date = new Date(date_str.slice(0, date_str.indexOf(".")))
+	log(date)
+	return date
+}
+
 var CityList = React.createClass({
 	render: function() {
 
 		return (
             <li>
                 { this.props.data.Name } { this.props.data.Sum }
-                <Chart data={ this.props.data }/>
+                <Chart chart_data={ this.props.data }/>
             </li>
         )
 	}
@@ -15,65 +21,51 @@ var CityList = React.createClass({
 
 var Chart = React.createClass({
     renderChart: function() {
-        console.log(this.props)
-        console.log(this.refs)
-        console.log("debug---")
         var node = this.refs.chartNode.getDOMNode()
-            , dataSeries = this.props.data.Items;
+            , dataSeries = this.props.chart_data.Items
+						, chartName = this.props.chart_data.Name
 
-        //console.log(d3)
+				jQuery(function($) {
+					var node_data = []
+					for(var i = 0; i < 10; i++) {
+						var ds = dataSeries[i]
+						node_data.push([dateFormatter(ds['created_at']), ds['temp']])
+						// node_data.push(ds['temp'])
+					}
+					log(node_data)
 
-        var chartOptions = {
-
-            rangeSelector: {
-                selected: 4
-            },
-
-            yAxis: {
-                labels: {
-                    formatter: function () {
-                        return (this.value > 0 ? ' + ' : '') + this.value + '%';
-                    }
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 2,
-                    color: 'silver'
-                }]
-            },
-
-            plotOptions: {
-                series: {
-                    compare: 'percent'
-                }
-            },
-
-            tooltip: {
-                valueDecimals: 2
-            },
-            chart: {
-                renderTo: node ,
-                width: 400 ,
-                height: 400
-            },
-            series: dataSeries
-        };
-
-
-        jQuery(function($) {
-            console.log("chart jquery initialized");
-            log(chartOptions);
-            $(node).highcharts('StockChart', chartOptions)
-        });
-//        var chartInstance = new Highcharts.Chart(chartOptions)
-//        this.setState({
-//            chartInstance: chartInstance
-//        })
-
-
-
-
-
+					$(node).highcharts({
+						chart: {
+								type: 'arearange',
+								zoomType: 'x',
+								height: 200
+						},
+						title: {
+							text: chartName
+						},
+						xAxis: {
+							type: 'datetime',
+							maxZoom: 48 * 3600 * 1000
+						},
+						yAxis: {
+							title: { },
+							min: -100
+						},
+						tooltip: {
+							crosshairs: true,
+							shared: true,
+							valueSuffix: 'C'
+						},
+						legend: {
+							enabled: true
+						},
+						series: [{
+							name: "test",
+							data: node_data,
+							pointStart: Date.UTC(2010, 0, 1),
+						}]
+					})
+				})
     },
 
     componentWillReceiveProps: function(nextProps) {
@@ -81,7 +73,7 @@ var Chart = React.createClass({
     },
 
     shouldComponentUpdate: function(nextProps, nextState) {
-        return nextProps.data.Items.length > 0;
+        return nextProps.chart_data.Items.length > 0;
     },
 
     componentDidUpdate: function(nextProps) {
@@ -108,16 +100,15 @@ var Cities = React.createClass({
 		var city_data = [{ Name: "Loading.." }];
 		if(this.props.Data) {
 			city_data = this.props.Data
-		}		
+		}
 		return (
 			<ul>
 				{
 					city_data.map(function(city) {
 						return <CityList data={ city } />;
 					})
-				}					
-
-			</ul>				
+				}
+			</ul>
 		)
 	}
 });

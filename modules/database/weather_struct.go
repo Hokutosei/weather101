@@ -1,13 +1,12 @@
 package database
 
 import (
-  "time"
+	"time"
 )
-
 
 type WeatherData struct {
 	CreatedAt time.Time `bson:"created_at" json:"created_at"`
-	Base      string `json:"base"`
+	Base      string    `json:"base"`
 	Clouds    struct {
 		All float64 `json:"all"`
 	} `json:"clouds"`
@@ -57,5 +56,5 @@ type AggregateWeather struct {
 }
 
 type Cities struct {
-    Name string `bson:"_id"`
+	Name string `bson:"_id"`
 }

@@ -29,7 +29,7 @@ func InlinePrint(toPrint ...string) {
 // transform string for aesthetic and readable in CLI
 func StringifyAndPadding(str interface{}) string {
 	var paddedStr string
-	
+
 	initStr := fmt.Sprintf("%v ", str)
 	padMaxLen := paddingMaxLen
 

@@ -3,8 +3,7 @@ var log = function(str) { console.log(str); };
 
 function dateFormatter(date_str) {
 	var date = new Date(date_str.slice(0, date_str.indexOf(".")))
-	log(date)
-	return date
+	return date.getTime()
 }
 
 var CityList = React.createClass({
@@ -27,44 +26,49 @@ var Chart = React.createClass({
 
 				jQuery(function($) {
 					var node_data = []
-					for(var i = 0; i < 10; i++) {
+					for(var i = 0; i < 500; i++) {
 						var ds = dataSeries[i]
-						node_data.push([dateFormatter(ds['created_at']), ds['temp']])
-						// node_data.push(ds['temp'])
+						// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
+						// node_data.push([dateFormatter(ds['created_at']), ds['temp']])
+						node_data.push(ds['temp'])
 					}
 					log(node_data)
 
-					$(node).highcharts({
-						chart: {
-								type: 'arearange',
-								zoomType: 'x',
-								height: 200
-						},
-						title: {
-							text: chartName
-						},
-						xAxis: {
-							type: 'datetime',
-							maxZoom: 48 * 3600 * 1000
-						},
-						yAxis: {
-							title: { },
-							min: -100
-						},
-						tooltip: {
-							crosshairs: true,
-							shared: true,
-							valueSuffix: 'C'
-						},
-						legend: {
-							enabled: true
-						},
-						series: [{
-							name: "test",
-							data: node_data,
-							pointStart: Date.UTC(2010, 0, 1),
-						}]
-					})
+					$(node).highcharts('StockChart', {
+						rangeSelector: {
+                  selected: 4
+              },
+
+              yAxis: {
+                  labels: {
+                      formatter: function () {
+                          return (this.value > 0 ? ' + ' : '') + this.value + '%';
+                      }
+                  },
+                  plotLines: [{
+                      value: 0,
+                      width: 2,
+                      color: 'silver'
+                  }]
+              },
+
+              plotOptions: {
+                  series: {
+                      compare: 'percent'
+                  }
+              },
+
+              tooltip: {
+                  pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+                  valueDecimals: 2
+              },
+
+              series: {
+								name: chartName,
+								data: dataSeries
+							}
+          });
+
 				})
     },
 

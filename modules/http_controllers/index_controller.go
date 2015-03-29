@@ -31,7 +31,7 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 
 	var weatherData database.WeatherData
 
-//	weatherData.GetWeatherData()
+	//	weatherData.GetWeatherData()
 	weathers, err := weatherData.GetIndex()
 	if err != nil {
 		fmt.Println(err)

@@ -13,29 +13,31 @@ import (
 var (
 	session *mgo.Session
 
-	dbName             = "weather_report101"
-	weather_collection = "weather"
+	dbName            = "weather_report101"
+	weatherCollection = "weather"
 )
 
-
+// StartMongoDb start mongodb instance
 func StartMongoDb() {
-	current_session, err := mgo.Dial("107.167.180.219:27017")
+	currentSession, err := mgo.Dial("107.167.180.219:27017")
 	if err != nil {
 		log.Println("err connecting to mongodb!")
 		log.Println("error: ", err)
 		return
 	}
 	fmt.Println("connected to mongodb!")
-	session = current_session
+	session = currentSession
 }
 
+// SessionCopy make a copy of current session
 func SessionCopy() *mgo.Session {
 	return session.Copy()
 }
 
-func (w *WeatherData) SaveAndPrint(start_time time.Time, toPrint ...string) (bool, error) {
+// SaveAndPrint save mongodb data and print output
+func (w *WeatherData) SaveAndPrint(startTime time.Time, toPrint ...string) (bool, error) {
 	sc := SessionCopy()
-	c := sc.DB(dbName).C(weather_collection)
+	c := sc.DB(dbName).C(weatherCollection)
 	defer sc.Close()
 
 	// w.CreatedAt = fmt.Sprintf("%v", time.Now().Local())
@@ -46,7 +48,7 @@ func (w *WeatherData) SaveAndPrint(start_time time.Time, toPrint ...string) (boo
 		return false, err
 	}
 
-	endTime := fmt.Sprintf("took: %v", time.Since(start_time))
+	endTime := fmt.Sprintf("took: %v", time.Since(startTime))
 	toPrint = append(toPrint, endTime)
 	utilities.InlinePrint(toPrint...)
 
@@ -55,13 +57,13 @@ func (w *WeatherData) SaveAndPrint(start_time time.Time, toPrint ...string) (boo
 
 func getAllCities() ([]Cities, error) {
 	sc := SessionCopy()
-	c := sc.DB(dbName).C(weather_collection)
+	c := sc.DB(dbName).C(weatherCollection)
 	defer sc.Close()
 
-	result := []Cities {}
-	query := []bson.M{{ "$group": bson.M{
-			"_id": "$name",
-		}},
+	result := []Cities{}
+	query := []bson.M{{"$group": bson.M{
+		"_id": "$name",
+	}},
 	}
 	err := c.Pipe(query).All(&result)
 	if err != nil {
@@ -73,7 +75,7 @@ func getAllCities() ([]Cities, error) {
 func getAllWeatherByCity(name string) {
 	start := time.Now()
 	sc := SessionCopy()
-	c := sc.DB(dbName).C(weather_collection)
+	c := sc.DB(dbName).C(weatherCollection)
 	defer sc.Close()
 
 	results := []WeatherData{}
@@ -84,6 +86,7 @@ func getAllWeatherByCity(name string) {
 	fmt.Println(time.Since(start))
 }
 
+// GetWeatherData make http request getting data
 func (w *WeatherData) GetWeatherData() {
 	cities, _ := getAllCities()
 	for _, city := range cities {
@@ -93,9 +96,10 @@ func (w *WeatherData) GetWeatherData() {
 	}
 }
 
+// GetIndex main index data getter
 func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	sc := SessionCopy()
-	c := sc.DB(dbName).C(weather_collection)
+	c := sc.DB(dbName).C(weatherCollection)
 	defer sc.Close()
 
 	// go GetWeatherData()
@@ -106,15 +110,20 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	// aggregation query
 	// group by name, sum, and
 	// make an array of data that group by name
+	gte := time.Now().Add(-time.Hour * 24)
+	lte := time.Now()
 	query := []bson.M{
+		{"$match": bson.M{
+			"created_at": bson.M{"$gte": gte, "$lte": lte},
+		}},
 		{"$group": bson.M{
-		"_id": "$name",
-		"sum": bson.M{"$sum": 1},
-		"items": bson.M{
-			"$push": bson.M{
-				"temp":       "$main.temp",
-				"created_at": "$created_at"}},
-	}},
+			"_id": "$name",
+			"sum": bson.M{"$sum": 1},
+			"items": bson.M{
+				"$push": bson.M{
+					"temp":       "$main.temp",
+					"created_at": "$created_at"}},
+		}},
 	}
 
 	start := time.Now()

@@ -29,8 +29,8 @@ var Chart = React.createClass({
 					for(var i = 0; i < 500; i++) {
 						var ds = dataSeries[i]
 						// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
-						// node_data.push([dateFormatter(ds['created_at']), ds['temp']])
-						node_data.push(ds['temp'])
+						node_data.push([dateFormatter(ds['created_at']), ds['temp']])
+						// node_data.push(ds['temp'])
 					}
 					log(node_data)
 

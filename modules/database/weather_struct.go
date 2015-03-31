@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// WeatherData is main weather data struct
 type WeatherData struct {
 	CreatedAt time.Time `bson:"created_at" json:"created_at"`
 	Base      string    `json:"base"`
@@ -46,15 +47,17 @@ type WeatherData struct {
 	} `json:"wind"`
 }
 
+// AggregateWeather used for returning data from aggregate framework
 type AggregateWeather struct {
 	Name  string `bson:"_id"`
 	Sum   int
 	Items []struct {
-		Temp      float64 `json:"temp"`
-		CreatedAt string  `bson:"created_at" json:"created_at"`
+		Temp      float64   `json:"temp"`
+		CreatedAt time.Time `bson:"created_at" json:"created_at"`
 	}
 }
 
+// Cities return city name list
 type Cities struct {
 	Name string `bson:"_id"`
 }

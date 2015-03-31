@@ -2,10 +2,11 @@ package database
 
 import (
 	"fmt"
-	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"log"
 	"time"
+
+	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 
 	"weather101/modules/utilities"
 )
@@ -112,6 +113,7 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	// make an array of data that group by name
 	gte := time.Now().Add(-time.Hour * 24)
 	lte := time.Now()
+	fmt.Println("query for this times gte: ", gte, " lte: ", lte)
 	query := []bson.M{
 		{"$match": bson.M{
 			"created_at": bson.M{"$gte": gte, "$lte": lte},

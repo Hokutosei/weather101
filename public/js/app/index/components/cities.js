@@ -24,52 +24,70 @@ var Chart = React.createClass({
             , dataSeries = this.props.chart_data.Items
 						, chartName = this.props.chart_data.Name
 
-				jQuery(function($) {
-					var node_data = []
-					for(var i = 0; i < 500; i++) {
-						var ds = dataSeries[i]
-						// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
-						node_data.push([dateFormatter(ds['created_at']), ds['temp']])
-						// node_data.push(ds['temp'])
-					}
-					log(node_data)
+		jQuery(function($) {
+			var node_data = []
+			for(var i = 0; i < 500; i++) {
+				var ds = dataSeries[i]
+				// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
+				//node_data.push([dateFormatter(ds['created_at']), ds['temp']])
+				node_data.push(ds['temp'])
+				if(node_data.length == 500) {
+					chartInit()
+				}
+			}
+			log(dataSeries[0].created_at)
+			function chartInit() {
+				$(node).highcharts('StockChart', {
+					chart: {
+						zoomType: 'x'
+					},
+					rangeSelector: {
 
-					$(node).highcharts('StockChart', {
-						rangeSelector: {
-                  selected: 4
-              },
+					                buttons: [{
+					                    type: 'day',
+					                    count: 3,
+					                    text: '3d'
+					                }, {
+					                    type: 'week',
+					                    count: 1,
+					                    text: '1w'
+					                }, {
+					                    type: 'month',
+					                    count: 1,
+					                    text: '1m'
+					                }, {
+					                    type: 'month',
+					                    count: 6,
+					                    text: '6m'
+					                }, {
+					                    type: 'year',
+					                    count: 1,
+					                    text: '1y'
+					                }, {
+					                    type: 'all',
+					                    text: 'All'
+					                }],
+					                selected: 3
+					            },
+					yAxis: {
+						title: {
+							text: 'temp'
+						}
+					},
 
-              yAxis: {
-                  labels: {
-                      formatter: function () {
-                          return (this.value > 0 ? ' + ' : '') + this.value + '%';
-                      }
-                  },
-                  plotLines: [{
-                      value: 0,
-                      width: 2,
-                      color: 'silver'
-                  }]
-              },
+					series: [
+						{
+							name: chartName,
+							data: node_data,
+							pointStart: 1430438400000,
+							pointInterval: 3600 * 1000
+						}
+					]
+				});
 
-              plotOptions: {
-                  series: {
-                      compare: 'percent'
-                  }
-              },
+			}
+		})
 
-              tooltip: {
-                  pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-                  valueDecimals: 2
-              },
-
-              series: {
-								name: chartName,
-								data: dataSeries
-							}
-          });
-
-				})
     },
 
     componentWillReceiveProps: function(nextProps) {

@@ -111,9 +111,10 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	// aggregation query
 	// group by name, sum, and
 	// make an array of data that group by name
-	gte := time.Now().Add(-time.Hour * 24)
+	gte := time.Now().Add(-time.Hour * 168)
 	lte := time.Now()
 	fmt.Println("query for this times gte: ", gte, " lte: ", lte)
+
 	query := []bson.M{
 		{"$match": bson.M{
 			"created_at": bson.M{"$gte": gte, "$lte": lte},
@@ -130,6 +131,9 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 
 	start := time.Now()
 	err := c.Pipe(query).All(&result)
+
+	// make temp conversion here!
+	// fmt.Println(result)
 
 	// benchmark how much time it took
 	fmt.Println("aggregate took: ", time.Since(start))

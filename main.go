@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	serverPort = ":8003"
+	serverPort = ":8000"
 )
 
 func main() {

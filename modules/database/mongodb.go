@@ -2,40 +2,45 @@ package database
 
 import (
 	"fmt"
-	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"log"
 	"time"
-
 	"weather101/modules/utilities"
+
+	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var (
 	session *mgo.Session
 
-	dbName             = "weather_report101"
-	weather_collection = "weather"
+	dbName            = "weather_report101"
+	weatherCollection = "weather"
+
+	// set hours per query day
+	hoursPerDayQuery time.Duration = 48
 )
 
-
+// StartMongoDb start mongodb instance
 func StartMongoDb() {
-	current_session, err := mgo.Dial("107.167.180.219:27017")
+	currentSession, err := mgo.Dial("107.167.180.219:27017")
 	if err != nil {
 		log.Println("err connecting to mongodb!")
 		log.Println("error: ", err)
 		return
 	}
 	fmt.Println("connected to mongodb!")
-	session = current_session
+	session = currentSession
 }
 
+// SessionCopy make a copy of current session
 func SessionCopy() *mgo.Session {
 	return session.Copy()
 }
 
-func (w *WeatherData) SaveAndPrint(start_time time.Time, toPrint ...string) (bool, error) {
+// SaveAndPrint save mongodb data and print output
+func (w *WeatherData) SaveAndPrint(startTime time.Time, toPrint ...string) (bool, error) {
 	sc := SessionCopy()
-	c := sc.DB(dbName).C(weather_collection)
+	c := sc.DB(dbName).C(weatherCollection)
 	defer sc.Close()
 
 	// w.CreatedAt = fmt.Sprintf("%v", time.Now().Local())
@@ -46,26 +51,61 @@ func (w *WeatherData) SaveAndPrint(start_time time.Time, toPrint ...string) (boo
 		return false, err
 	}
 
-	endTime := fmt.Sprintf("took: %v", time.Since(start_time))
+	endTime := fmt.Sprintf("took: %v", time.Since(startTime))
 	toPrint = append(toPrint, endTime)
 	utilities.InlinePrint(toPrint...)
 
 	return true, nil
 }
 
-type AggregateWeather struct {
-	Name  string `bson:"_id"`
-	Sum   int
-	Items []struct {
-		Temp      float64 `json:"temp"`
-		CreatedAt string  `bson:"created_at" json:"created_at"`
+func getAllCities() ([]Cities, error) {
+	sc := SessionCopy()
+	c := sc.DB(dbName).C(weatherCollection)
+	defer sc.Close()
+
+	result := []Cities{}
+	query := []bson.M{{"$group": bson.M{
+		"_id": "$name",
+	}},
+	}
+	err := c.Pipe(query).All(&result)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
+func getAllWeatherByCity(name string) {
+	start := time.Now()
+	sc := SessionCopy()
+	c := sc.DB(dbName).C(weatherCollection)
+	defer sc.Close()
+
+	results := []WeatherData{}
+	query := bson.M{"name": name}
+	err := c.Find(query).All(&results)
+	_ = err
+	fmt.Println(len(results))
+	fmt.Println(time.Since(start))
+}
+
+// GetWeatherData make http request getting data
+func (w *WeatherData) GetWeatherData() {
+	cities, _ := getAllCities()
+	for _, city := range cities {
+		go func(name string) {
+			getAllWeatherByCity(name)
+		}(city.Name)
 	}
 }
 
+// GetIndex main index data getter
 func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	sc := SessionCopy()
-	c := sc.DB(dbName).C(weather_collection)
+	c := sc.DB(dbName).C(weatherCollection)
 	defer sc.Close()
+
+	// go GetWeatherData()
 
 	//db.weather.aggregate([{$group: {_id: "$name", items: {$push: {temp: "$main.temp"}}}}])
 	result := []AggregateWeather{}
@@ -73,18 +113,30 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	// aggregation query
 	// group by name, sum, and
 	// make an array of data that group by name
-	query := []bson.M{{"$group": bson.M{
-		"_id": "$name",
-		"sum": bson.M{"$sum": 1},
-		"items": bson.M{
-			"$push": bson.M{
-				"temp":       "$main.temp",
-				"created_at": "$created_at"}},
-	}},
+	gte := time.Now().Add(-time.Hour * hoursPerDayQuery)
+	lte := time.Now()
+	fmt.Println("query for this times gte: ", gte, " lte: ", lte)
+
+	query := []bson.M{
+		{"$match": bson.M{
+			"created_at": bson.M{"$gte": gte, "$lte": lte},
+		}},
+		{"$group": bson.M{
+			"_id": "$name",
+			"sum": bson.M{"$sum": 1},
+			"items": bson.M{
+				"$push": bson.M{
+					"temp":       "$main.temp",
+					"created_at": "$created_at"}},
+		}},
 	}
 
 	start := time.Now()
 	err := c.Pipe(query).All(&result)
+
+	// make temp conversion here!
+	// fmt.Println(result.ConvertKelvinToCent())
+	TemperatureDataConvertion(result)
 
 	// benchmark how much time it took
 	fmt.Println("aggregate took: ", time.Since(start))

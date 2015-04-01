@@ -12,19 +12,22 @@ import (
 )
 
 var (
-	api_url     = "http://api.openweathermap.org/data/2.5/weather?q="
+	apiUrl      = "http://api.openweathermap.org/data/2.5/weather?q="
 	delay       = 59
 	loopCounter = 0
 )
 
+// getWeather main event loop
+// that get all weather data
 func getWeather(city ...string) {
+	fmt.Println(city)
 	for _, name := range city {
 		go func(name string) {
 			start := time.Now()
-			city_url := fmt.Sprintf("%v%v", api_url, name)
+			cityUrl := fmt.Sprintf("%v%v", apiUrl, name)
 
 			// http request
-			response, err := httpGet(city_url)
+			response, err := httpGet(cityUrl)
 			if err != nil {
 				fmt.Println("has error: ", name)
 				return
@@ -47,13 +50,13 @@ func getWeather(city ...string) {
 			}
 
 			// fmt.Println(dat) # debug code
-			temp_str := fmt.Sprintf("temp: %v C ", utilities.ConvertCelsius(dat.Main.Temp))
-			weather_description := dat.Weather[0].Description
+			tempStr := fmt.Sprintf("temp: %v C ", utilities.ConvertCelsius(dat.Main.Temp))
+			weatherDescription := dat.Weather[0].Description
 
 			// output message
 			toPrint := []string{
-				temp_str,
-				weather_description,
+				tempStr,
+				weatherDescription,
 				name,
 			}
 
@@ -71,11 +74,20 @@ func getWeather(city ...string) {
 	}
 }
 
+// mainWeatherGetter call main event weather loop
 func mainWeatherGetter() {
-	cities := []string{"akiruno-shi", "paranaque", "omiya-shi", "machida-shi", "akishima-shi"}
-	getWeather(cities...)
+	// make channel for city list result from redis
+	cityListChan := make(chan []string)
+
+	// from goroutine, get all city list from redis
+	go database.GetAllCityList(cityListChan)
+
+	// cities := []string{"akiruno-shi", "paranaque", "omiya-shi", "machida-shi", "akishima-shi"}
+	// cities := <-cityListChan
+	getWeather(<-cityListChan...)
 }
 
+// StartGettingWeather initialize weather getter and setter
 func StartGettingWeather() {
 	// get some initial data from start
 	// mainWeatherGetter()

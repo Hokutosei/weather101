@@ -17,5 +17,4 @@ app.config(function($routeProvider, $locationProvider) {
 		enabled: false,
 		requireBase: false
 	})
-
 })

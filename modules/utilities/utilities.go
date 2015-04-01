@@ -23,13 +23,13 @@ func InlinePrint(toPrint ...string) {
 		printStr += StringifyAndPadding(str)
 	}
 
-	fmt.Println("------------------------------ ", printStr)
+	fmt.Println("---------------->> ", printStr)
 }
 
 // transform string for aesthetic and readable in CLI
 func StringifyAndPadding(str interface{}) string {
 	var paddedStr string
-	
+
 	initStr := fmt.Sprintf("%v ", str)
 	padMaxLen := paddingMaxLen
 

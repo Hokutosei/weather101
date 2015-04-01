@@ -1,13 +1,13 @@
 package database
 
 import (
-  "time"
+	"time"
 )
 
-
+// WeatherData is main weather data struct
 type WeatherData struct {
 	CreatedAt time.Time `bson:"created_at" json:"created_at"`
-	Base      string `json:"base"`
+	Base      string    `json:"base"`
 	Clouds    struct {
 		All float64 `json:"all"`
 	} `json:"clouds"`
@@ -45,4 +45,20 @@ type WeatherData struct {
 		Gust  float64 `json:"gust"`
 		Speed float64 `json:"speed"`
 	} `json:"wind"`
+}
+
+// AggregateWeather used for returning data from aggregate framework
+type AggregateWeather struct {
+	Name  string `bson:"_id"`
+	Sum   int
+	Items []struct {
+		Temp      float64   `json:"temp"`
+		Celsius   int       `json:"celsius"`
+		CreatedAt time.Time `bson:"created_at" json:"created_at"`
+	}
+}
+
+// Cities return city name list
+type Cities struct {
+	Name string `bson:"_id"`
 }

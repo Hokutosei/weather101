@@ -18,6 +18,7 @@ func main() {
 
 	go database.StartMongoDb()
 	go database.StartAerospikeDb()
+	go database.StartRedis()
 
 	go weather.StartGettingWeather()
 

@@ -32,8 +32,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
 func GetIndex(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetIndex handled!")
 
-	database.GetAllCityList()
-
 	var weatherData database.WeatherData
 
 	//	weatherData.GetWeatherData()

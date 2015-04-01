@@ -47,11 +47,18 @@ func keyConstructor(stringName ...string) string {
 }
 
 // GetAllCityList query all city names
-func GetAllCityList() {
-	// r := pool.Get()
-	// defer r.Close()
+func GetAllCityList(cityList chan []string) {
+	r := pool.Get()
+	defer r.Close()
+
 	strName := []string{"city", "list"}
 	key := keyConstructor(strName...)
-	fmt.Println(key)
 
+	resp, err := redis.Strings(r.Do("LRANGE", key, "0", "-1"))
+	if err != nil {
+		fmt.Println(err)
+		cityList <- []string{}
+	}
+
+	cityList <- resp
 }

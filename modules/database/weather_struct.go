@@ -53,6 +53,7 @@ type AggregateWeather struct {
 	Sum   int
 	Items []struct {
 		Temp      float64   `json:"temp"`
+		Celsius   int       `json:"celsius"`
 		CreatedAt time.Time `bson:"created_at" json:"created_at"`
 	}
 }

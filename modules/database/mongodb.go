@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"weather101/modules/utilities"
 
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-
-	"weather101/modules/utilities"
 )
 
 var (
@@ -133,7 +132,8 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	err := c.Pipe(query).All(&result)
 
 	// make temp conversion here!
-	// fmt.Println(result)
+	// fmt.Println(result.ConvertKelvinToCent())
+	TemperatureDataConvertion(result)
 
 	// benchmark how much time it took
 	fmt.Println("aggregate took: ", time.Since(start))

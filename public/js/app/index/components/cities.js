@@ -19,10 +19,9 @@ var CityList = React.createClass({
 });
 
 var Chart = React.createClass({
-    renderChart: function() {
-        var node = this.refs.chartNode.getDOMNode()
-            , dataSeries = this.props.chart_data.Items
-						, chartName = this.props.chart_data.Name
+    renderChart: function(node) {
+            var dataSeries = this.props.chart_data.Items
+				, chartName = this.props.chart_data.Name
 
 		jQuery(function($) {
 			var node_data = []
@@ -30,13 +29,15 @@ var Chart = React.createClass({
 				var ds = dataSeries[i]
 				// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
 				//node_data.push([dateFormatter(ds['created_at']), ds['temp']])
-				node_data.push(ds['temp'])
+				node_data.push(ds['celsius'])
 				if(node_data.length == 500) {
 					chartInit()
 				}
 			}
-			log(dataSeries[0].created_at)
 			function chartInit() {
+				var startDate = (new Date(dataSeries[0].created_at).getTime())
+				log(startDate)
+
 				$(node).highcharts('StockChart', {
 					chart: {
 						zoomType: 'x'
@@ -79,8 +80,8 @@ var Chart = React.createClass({
 						{
 							name: chartName,
 							data: node_data,
-							pointStart: 1430438400000,
-							pointInterval: 3600 * 1000
+							pointStart: (new Date(dataSeries[0].created_at).getTime()),
+							pointInterval: 168
 						}
 					]
 				});
@@ -99,7 +100,8 @@ var Chart = React.createClass({
     },
 
     componentDidUpdate: function(nextProps) {
-        this.renderChart();
+		var node = this.refs.chartNode.getDOMNode()
+        this.renderChart(node);
     },
 
     render: function() {

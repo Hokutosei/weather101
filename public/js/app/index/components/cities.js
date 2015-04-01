@@ -35,7 +35,7 @@ var Chart = React.createClass({
 				}
 			}
 			function chartInit() {
-				var startDate = (new Date(dataSeries[0].created_at).getTime())
+				var startDate = (new Date(dataSeries[0].created_at))
 				log(startDate)
 
 				$(node).highcharts('StockChart', {
@@ -81,7 +81,7 @@ var Chart = React.createClass({
 							name: chartName,
 							data: node_data,
 							pointStart: (new Date(dataSeries[0].created_at).getTime()),
-							pointInterval: 168
+							pointInterval: 3600 * 100
 						}
 					]
 				});

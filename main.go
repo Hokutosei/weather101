@@ -17,6 +17,7 @@ func main() {
 	startRoutes()
 
 	go database.StartMongoDb()
+	go database.StartAerospikeDb()
 
 	go weather.StartGettingWeather()
 

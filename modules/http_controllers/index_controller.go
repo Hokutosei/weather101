@@ -10,24 +10,29 @@ import (
 	"weather101/modules/utilities"
 )
 
+// WeatherResponse struct for HTTP response
 type WeatherResponse struct {
 	Status int
 	Data   []database.AggregateWeather
 }
 
+// Index http controller
 func Index(w http.ResponseWriter, r *http.Request) {
 	log.Println("index rendered...")
 	indexTemplate := "index.html"
 	t := template.New(indexTemplate).Delims("{{%", "%}}")
 	// indexVars := IndexVars{}
 
-	parsed_template_str := fmt.Sprintf("public/%s", indexTemplate)
-	t, _ = t.ParseFiles(parsed_template_str)
+	parsedTemplateStr := fmt.Sprintf("public/%s", indexTemplate)
+	t, _ = t.ParseFiles(parsedTemplateStr)
 	t.Execute(w, nil)
 }
 
+// GetIndex http request handler for index data
 func GetIndex(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetIndex handled!")
+
+	database.GetAllCityList()
 
 	var weatherData database.WeatherData
 

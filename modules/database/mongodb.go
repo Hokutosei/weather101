@@ -15,6 +15,9 @@ var (
 
 	dbName            = "weather_report101"
 	weatherCollection = "weather"
+
+	// set hours per query day
+	hoursPerDayQuery time.Duration = 48
 )
 
 // StartMongoDb start mongodb instance
@@ -110,7 +113,7 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 	// aggregation query
 	// group by name, sum, and
 	// make an array of data that group by name
-	gte := time.Now().Add(-time.Hour * 168)
+	gte := time.Now().Add(-time.Hour * hoursPerDayQuery)
 	lte := time.Now()
 	fmt.Println("query for this times gte: ", gte, " lte: ", lte)
 

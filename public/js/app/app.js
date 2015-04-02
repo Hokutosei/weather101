@@ -9,12 +9,16 @@ app.config(function($routeProvider, $locationProvider) {
 			templateUrl: 'js/app/index/template/' + 'index.html',
 			controller: 'IndexController'
 		})
+		.when('/admin', {
+			templateUrl: 'js/app/admin/template/' + 'index.html',
+			controller: 'AdminIndexController'
+		})
 		.otherwise({
 			redirectTo: '/'
 		})
 
 	$locationProvider.html5Mode({
-		enabled: false,
-		requireBase: false
+		enabled: true,
+		requireBase: true
 	})
 })

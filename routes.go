@@ -12,4 +12,6 @@ func startRoutes() {
 
 	http.HandleFunc("/", http_controllers.Index)
 	http.HandleFunc("/get_index", http_controllers.GetIndex)
+
+	http.HandleFunc("/get_admin", http_controllers.AdminIndex)
 }

@@ -6,11 +6,11 @@ function dateFormatter(date_str) {
 	return date.getTime()
 }
 
-var CityList = React.createClass({
+var CityListItem = React.createClass({
 	render: function() {
 
 		return (
-            <li>
+            <li key={ this.props.key }>
                 { this.props.data.Name } { this.props.data.Sum }
                 <Chart chart_data={ this.props.data }/>
             </li>
@@ -33,7 +33,14 @@ var Chart = React.createClass({
 				if(node_data.length == 500) {
 					chartInit()
 				}
-			}
+			};
+			function hideZoomBar(chart) {
+			        chart.rangeSelector.zoomText.hide();
+			        $.each(chart.rangeSelector.buttons, function () {
+			            this.hide();
+			        });
+			        $(chart.rangeSelector.divRelative).hide();
+			};
 			function chartInit() {
 				var startDate = (new Date(dataSeries[0].created_at))
 				log(startDate)
@@ -42,40 +49,14 @@ var Chart = React.createClass({
 					chart: {
 						zoomType: 'x'
 					},
-					rangeSelector: {
-
-					                buttons: [{
-					                    type: 'day',
-					                    count: 3,
-					                    text: '3d'
-					                }, {
-					                    type: 'week',
-					                    count: 1,
-					                    text: '1w'
-					                }, {
-					                    type: 'month',
-					                    count: 1,
-					                    text: '1m'
-					                }, {
-					                    type: 'month',
-					                    count: 6,
-					                    text: '6m'
-					                }, {
-					                    type: 'year',
-					                    count: 1,
-					                    text: '1y'
-					                }, {
-					                    type: 'all',
-					                    text: 'All'
-					                }],
-					                selected: 3
-					            },
 					yAxis: {
 						title: {
 							text: 'temp'
 						}
 					},
-
+					navigator: {
+					            enabled: false
+					},
 					series: [
 						{
 							name: chartName,
@@ -128,8 +109,8 @@ var Cities = React.createClass({
 		return (
 			<ul>
 				{
-					city_data.map(function(city) {
-						return <CityList data={ city } />;
+					city_data.map(function(city, index) {
+						return <CityListItem data={ city } key={ index } />;
 					})
 				}
 			</ul>

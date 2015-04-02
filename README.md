@@ -1,11 +1,12 @@
-# web102 framework
-A small bare minimum web app written in go that serve data from backend to angular front end
+# weather101
+long batch process that GET weather to different cities in japan and philippines.
 
 ### Backend
 
 * go
-* mongodb 
-* redis (default cache etc not implemented)
+* mongodb
+* redis
+* aerospikedb
 
 ### Frontend
 
@@ -16,3 +17,8 @@ A small bare minimum web app written in go that serve data from backend to angul
 * twitter bootstrap
 * reactjs
 * JSXTransformer
+* highstock
+
+### CLI Sample
+
+![cli_sample.png](https://bitbucket.org/repo/BpM8dn/images/404234857-cli_sample.png)

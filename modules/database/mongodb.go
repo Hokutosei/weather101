@@ -22,13 +22,14 @@ var (
 
 // StartMongoDb start mongodb instance
 func StartMongoDb() {
-	currentSession, err := mgo.Dial("107.167.180.219:27017")
+	//currentSession, err := mgo.Dial("107.167.180.219:27017")
+	currentSession, err := mgo.Dial("104.155.230.215:27020")
 	if err != nil {
 		log.Println("err connecting to mongodb!")
 		log.Println("error: ", err)
 		return
 	}
-	fmt.Println("connected to mongodb!")
+	fmt.Println("connected to mongos!")
 	session = currentSession
 }
 
@@ -58,6 +59,7 @@ func (w *WeatherData) SaveAndPrint(startTime time.Time, toPrint ...string) (bool
 	return true, nil
 }
 
+// getAllCities list down city names
 func getAllCities() ([]Cities, error) {
 	sc := SessionCopy()
 	c := sc.DB(dbName).C(weatherCollection)

@@ -22,14 +22,14 @@ var Chart = React.createClass({
     renderChart: function(node) {
             var dataSeries = this.props.chart_data.Items
 				, chartName = this.props.chart_data.Name
-				, pointLimit = 9000
+				, pointLimit = 8500
 
 				var node_data = []
 				for(var i = 0; i < pointLimit; i++) {
 					var ds = dataSeries[i]
 					// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
 					//node_data.push([dateFormatter(ds['created_at']), ds['temp']])
-					var tempVal = ds['celsius'] == 0 ? convertCelsius(ds['temp']) : ds['celsius']
+					var tempVal = !ds['celsius'] || ds['celsius'] == 0 ? convertCelsius(ds['temp']) : ds['celsius']
 					node_data.push(tempVal)
 					if(node_data.length == pointLimit) {
 						chartInit()
@@ -41,13 +41,6 @@ var Chart = React.createClass({
 					return parseInt((temp - 273.15).toFixed(2))
 				}
 
-				function hideZoomBar(chart) {
-				        chart.rangeSelector.zoomText.hide();
-				        $.each(chart.rangeSelector.buttons, function () {
-				            this.hide();
-				        });
-				        $(chart.rangeSelector.divRelative).hide();
-				};
 				function chartInit() {
 					var startDate = (new Date(dataSeries[0].created_at))
 

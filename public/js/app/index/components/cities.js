@@ -11,7 +11,7 @@ var CityListItem = React.createClass({
 
 		return (
             <li className="city">
-                { this.props.data.Name } { this.props.data.Sum }
+                { this.props.data.Name } { this.props.data.Sum } points
                 <Chart chart_data={ this.props.data }/>
             </li>
         )
@@ -22,15 +22,16 @@ var Chart = React.createClass({
     renderChart: function(node) {
             var dataSeries = this.props.chart_data.Items
 				, chartName = this.props.chart_data.Name
+				, pointLimit = 9000
 
 				var node_data = []
-				for(var i = 0; i < 500; i++) {
+				for(var i = 0; i < pointLimit; i++) {
 					var ds = dataSeries[i]
 					// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
 					//node_data.push([dateFormatter(ds['created_at']), ds['temp']])
 					var tempVal = ds['celsius'] == 0 ? convertCelsius(ds['temp']) : ds['celsius']
 					node_data.push(tempVal)
-					if(node_data.length == 500) {
+					if(node_data.length == pointLimit) {
 						chartInit()
 						return false
 					}
@@ -76,7 +77,7 @@ var Chart = React.createClass({
 								name: chartName,
 								data: node_data,
 								pointStart: (new Date(dataSeries[0].created_at).getTime()),
-								pointInterval: 3600 * 100
+								pointInterval: 24 * 3600
 							}
 						]
 					});

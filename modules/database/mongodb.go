@@ -17,7 +17,9 @@ var (
 	weatherCollection = "weather"
 
 	// set hours per query day
-	hoursPerDayQuery time.Duration = 48
+	week             time.Duration = 168
+	twoDays          time.Duration = 48
+	hoursPerDayQuery time.Duration = week
 )
 
 // StartMongoDb start mongodb instance

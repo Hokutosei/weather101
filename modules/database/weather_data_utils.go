@@ -3,7 +3,7 @@ package database
 import "fmt"
 
 // TemperatureDataConvertion convert weather items
-func TemperatureDataConvertion(aggregatedWeather []AggregateWeather) {
+func TemperatureDataConvertion(aggregatedWeather []AggregateWeather) []AggregateWeather {
 	for _, item := range aggregatedWeather {
 		go func(item AggregateWeather) {
 			for i := range item.Items {
@@ -12,14 +12,24 @@ func TemperatureDataConvertion(aggregatedWeather []AggregateWeather) {
 				n := &item.Items[i]
 
 				// then modify it
-				n.Celsius = convertKelvin(n.Temp)
+				resultChan := make(chan int)
+				//n.Celsius = convertKelvin(n.Temp, resultChan)
+				go convertKelvin(n.Temp, resultChan)
+				out := <-resultChan
+				n.Celsius = out
 			}
 		}(item)
 	}
+	return aggregatedWeather
 }
 
-func convertKelvin(kelvin float64) int {
-	return int(kelvin - 273.15)
+func convertKelvin(kelvin float64, resultInt chan int) {
+	result := int(kelvin - 273.15)
+	if result == 0 {
+		panic("error")
+	}
+	// return result
+	resultInt <- result
 }
 
 // ConvertKelvinToCent converts current temperature

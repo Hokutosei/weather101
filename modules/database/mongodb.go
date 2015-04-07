@@ -138,7 +138,7 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 
 	// make temp conversion here!
 	// fmt.Println(result.ConvertKelvinToCent())
-	TemperatureDataConvertion(result)
+	convertedResult := TemperatureDataConvertion(result)
 
 	// benchmark how much time it took
 	fmt.Println("aggregate took: ", time.Since(start))
@@ -146,5 +146,5 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 		fmt.Println(err)
 		return result, err
 	}
-	return result, nil
+	return convertedResult, nil
 }

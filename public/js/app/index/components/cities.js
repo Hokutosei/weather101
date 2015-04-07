@@ -10,7 +10,7 @@ var CityListItem = React.createClass({
 	render: function() {
 
 		return (
-            <li key={ this.props.key }>
+            <li className="city">
                 { this.props.data.Name } { this.props.data.Sum }
                 <Chart chart_data={ this.props.data }/>
             </li>
@@ -23,53 +23,65 @@ var Chart = React.createClass({
             var dataSeries = this.props.chart_data.Items
 				, chartName = this.props.chart_data.Name
 
-		jQuery(function($) {
-			var node_data = []
-			for(var i = 0; i < 500; i++) {
-				var ds = dataSeries[i]
-				// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
-				//node_data.push([dateFormatter(ds['created_at']), ds['temp']])
-				node_data.push(ds['celsius'])
-				if(node_data.length == 500) {
-					chartInit()
+				var node_data = []
+				for(var i = 0; i < 500; i++) {
+					var ds = dataSeries[i]
+					// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
+					//node_data.push([dateFormatter(ds['created_at']), ds['temp']])
+					var tempVal = ds['celsius'] == 0 ? convertCelsius(ds['temp']) : ds['celsius']
+					node_data.push(tempVal)
+					if(node_data.length == 500) {
+						chartInit()
+						return false
+					}
+				};
+
+				function convertCelsius(temp) {
+					return parseInt((temp - 273.15).toFixed(2))
 				}
-			};
-			function hideZoomBar(chart) {
-			        chart.rangeSelector.zoomText.hide();
-			        $.each(chart.rangeSelector.buttons, function () {
-			            this.hide();
-			        });
-			        $(chart.rangeSelector.divRelative).hide();
-			};
-			function chartInit() {
-				var startDate = (new Date(dataSeries[0].created_at))
-				log(startDate)
 
-				$(node).highcharts('StockChart', {
-					chart: {
-						zoomType: 'x'
-					},
-					yAxis: {
-						title: {
-							text: 'temp'
-						}
-					},
-					navigator: {
-					            enabled: false
-					},
-					series: [
-						{
-							name: chartName,
-							data: node_data,
-							pointStart: (new Date(dataSeries[0].created_at).getTime()),
-							pointInterval: 3600 * 100
-						}
-					]
-				});
+				function hideZoomBar(chart) {
+				        chart.rangeSelector.zoomText.hide();
+				        $.each(chart.rangeSelector.buttons, function () {
+				            this.hide();
+				        });
+				        $(chart.rangeSelector.divRelative).hide();
+				};
+				function chartInit() {
+					var startDate = (new Date(dataSeries[0].created_at))
 
-			}
-		})
+					$(node).highcharts('StockChart', {
+						chart: {
+							zoomType: 'x',
+							width: 800,
+							height: 200,
+							panning: false
+						},
+						yAxis: {
+							title: {
+								text: 'temp'
+							}
+						},
+						navigator: {
+						            enabled: false
+						},
+						scrollbar: {
+							enabled: false
+						},
+						rangeSelector : {
+						        enabled: false
+						},
+						series: [
+							{
+								name: chartName,
+								data: node_data,
+								pointStart: (new Date(dataSeries[0].created_at).getTime()),
+								pointInterval: 3600 * 100
+							}
+						]
+					});
 
+				}
     },
 
     componentWillReceiveProps: function(nextProps) {
@@ -107,7 +119,7 @@ var Cities = React.createClass({
 			city_data = this.props.Data
 		}
 		return (
-			<ul>
+			<ul className="cities">
 				{
 					city_data.map(function(city, index) {
 						return <CityListItem data={ city } key={ index } />;

@@ -55,25 +55,15 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 
 	//	weatherData.GetWeatherData()
 	chanWeather := make(chan []database.AggregateWeather)
-	weathers, err := weatherData.GetIndex(chanWeather)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(len(weathers))
+	go weatherData.GetIndex(chanWeather)
 
 	for {
 		// Blocks until a message is read
-		_, msg, err := conn.ReadMessage()
-		if err != nil {
-			delete(connections, conn)
-			conn.Close()
-			return
-		}
-		log.Println(string(msg))
-
-		for _, item := range <-chanWeather {
-			sendAll([]byte{item})
+		d := <-chanWeather
+		for _, item := range d {
+			s := fmt.Sprintf("%v", item)
+			data := []byte(s)
+			sendAll(data)
 		}
 	}
 
@@ -99,6 +89,7 @@ func sendAll(msg []byte) {
 	}
 }
 
+// MakeConnections initialize connections
 func MakeConnections() {
 	connections = make(map[*websocket.Conn]bool)
 }

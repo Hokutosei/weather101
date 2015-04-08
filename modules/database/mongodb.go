@@ -17,9 +17,10 @@ var (
 	weatherCollection = "weather"
 
 	// set hours per query day
-	week             time.Duration = 168
-	twoDays          time.Duration = 48
-	hoursPerDayQuery time.Duration = week
+	week             time.Duration = 24 * 7
+	twoDays          time.Duration = 24 * 2
+	hoursPerDay      time.Duration = 24
+	hoursPerDayQuery time.Duration = hoursPerDay * 5
 )
 
 // StartMongoDb start mongodb instance
@@ -104,7 +105,7 @@ func (w *WeatherData) GetWeatherData() {
 }
 
 // GetIndex main index data getter
-func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
+func (w *WeatherData) GetIndex(chanWeather chan []AggregateWeather) ([]AggregateWeather, error) {
 	sc := SessionCopy()
 	c := sc.DB(dbName).C(weatherCollection)
 	defer sc.Close()
@@ -130,8 +131,9 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 			"sum": bson.M{"$sum": 1},
 			"items": bson.M{
 				"$push": bson.M{
-					"temp":       "$main.temp",
-					"created_at": "$created_at"}},
+					"temp":        "$main.temp",
+					"created_at":  "$created_at",
+					"description": "$weather"}},
 		}},
 	}
 
@@ -148,5 +150,6 @@ func (w *WeatherData) GetIndex() ([]AggregateWeather, error) {
 		fmt.Println(err)
 		return result, err
 	}
+	chanWeather <- convertedResult
 	return convertedResult, nil
 }

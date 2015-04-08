@@ -52,9 +52,12 @@ type AggregateWeather struct {
 	Name  string `bson:"_id"`
 	Sum   int
 	Items []struct {
-		Temp      float64   `json:"temp"`
-		Celsius   int       `json:"celsius"`
-		CreatedAt time.Time `bson:"created_at" json:"created_at"`
+		Temp        float64   `json:"temp"`
+		Celsius     int       `json:"celsius"`
+		CreatedAt   time.Time `bson:"created_at" json:"created_at"`
+		Description []struct {
+			Description string `json:"description"`
+		} `json:"description"`
 	}
 }
 

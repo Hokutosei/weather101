@@ -31,7 +31,7 @@ function tempColor(temp) {
 
 
 
-var CityLatestTemp = React.createClass({
+var CityLatestTemp = React.createClass({displayName: "CityLatestTemp",
 
 	getInitialState: function() {
 		return {
@@ -74,49 +74,49 @@ var CityLatestTemp = React.createClass({
 			, tempDescription = this.weatherDescription(this.state.Items)
 
 		return (
-			<div>
-				<span className="cityTemp" style={ this.state.style }>{ lastestRecord }</span> <br />
-				<span> { tempDescription } </span>
-			</div>
+			React.createElement("div", null, 
+				React.createElement("span", {className: "cityTemp", style:  this.state.style},  lastestRecord ), " ", React.createElement("br", null), 
+				React.createElement("span", null, " ",  tempDescription, " ")
+			)
 		)
 	}
 });
 
-var CityListItem = React.createClass({
+var CityListItem = React.createClass({displayName: "CityListItem",
 	render: function() {
 
 		var br_style = { clear: 'both' }
 
 		return (
-            <li className="city">
-				<div className="">
-					<div className="col-sm-7">
-		                { this.props.data.Name } Chart
-		                <Chart chart_data={ this.props.data }/>
-					</div>
-					<div className="col-sm-2 col-xs-offset-2">
-						<div className="row">
-							<div className="cityNameProfile">
-								{ this.props.data.Name }
-							</div>
+            React.createElement("li", {className: "city"}, 
+				React.createElement("div", {className: ""}, 
+					React.createElement("div", {className: "col-sm-7"}, 
+		                 this.props.data.Name, " Chart", 
+		                React.createElement(Chart, {chart_data:  this.props.data})
+					), 
+					React.createElement("div", {className: "col-sm-2 col-xs-offset-2"}, 
+						React.createElement("div", {className: "row"}, 
+							React.createElement("div", {className: "cityNameProfile"}, 
+								 this.props.data.Name
+							), 
 
-							<div className="cityDataTotalRecords">
-								{ this.props.data.Sum } records
-							</div>
+							React.createElement("div", {className: "cityDataTotalRecords"}, 
+								 this.props.data.Sum, " records"
+							), 
 
-							<div className="cityLatestTemp">
-								<CityLatestTemp Items={ this.props.data.Items } />
-							</div>
-						</div>
-					</div>
-				</div>
-				<br style={ br_style }/>
-            </li>
+							React.createElement("div", {className: "cityLatestTemp"}, 
+								React.createElement(CityLatestTemp, {Items:  this.props.data.Items})
+							)
+						)
+					)
+				), 
+				React.createElement("br", {style:  br_style })
+            )
         )
 	}
 });
 
-var Chart = React.createClass({
+var Chart = React.createClass({displayName: "Chart",
     renderChart: function(node) {
             var dataSeries = this.props.chart_data.Items
 				, chartName = this.props.chart_data.Name
@@ -194,7 +194,7 @@ var Chart = React.createClass({
     }
 });
 
-var Cities = React.createClass({
+var Cities = React.createClass({displayName: "Cities",
 	getInitialState: function() {
 		return {
 			Data: []
@@ -211,13 +211,13 @@ var Cities = React.createClass({
 			city_data = this.props.Data
 		}
 		return (
-			<ul className="cities">
-				{
+			React.createElement("ul", {className: "cities"}, 
+				
 					city_data.map(function(city, index) {
-						return <CityListItem data={ city } key={ index } />;
+						return React.createElement(CityListItem, {data:  city, key:  index });
 					})
-				}
-			</ul>
+				
+			)
 		)
 	}
 });

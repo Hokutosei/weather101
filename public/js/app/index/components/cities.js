@@ -6,13 +6,98 @@ function dateFormatter(date_str) {
 	return date.getTime()
 }
 
+function convertCelsius(temp) {
+	return parseInt((temp - 273.15).toFixed(2))
+}
+
+function tempColor(temp) {
+	var css = {};
+	switch (true) {
+		case (temp >= 1 && temp <= 5):
+			css.color = '#bedff6'
+			break;
+		case (temp >= 6 && temp <= 8):
+			css.color = '#8ac6ef'
+			break;
+		case (temp >= 29 && temp <= 33):
+			css.color = '#ffb732'
+			break;
+		default: {
+			css.color = '#000'
+		}
+	}
+	return css
+}
+
+
+
+var CityLatestTemp = React.createClass({
+
+	getInitialState: function() {
+		return {
+			Items: [],
+			style: {}
+		}
+	},
+
+	componentWillReceiveProps: function(nextProps) {
+		this.setState({ Items: nextProps.Items })
+	},
+
+	shouldComponentUpdate: function(nextProps, nextState) {
+		return nextProps.Items != undefined && nextProps.Items.length > 0;
+	},
+
+	componentDidUpdate: function(nextProps) {
+	},
+
+	latestItem: function(items) {
+		var lastItem = _.last(items);
+		if(lastItem == undefined) return false;
+
+		var convertedTemp = convertCelsius(lastItem.temp)
+		this.state.style = tempColor(parseInt(convertedTemp))
+
+		return convertedTemp + '\u00B0' + 'C'
+	},
+
+
+	render: function() {
+
+		var lastestRecord = this.latestItem(this.state.Items)
+
+		return (
+			<span className="cityTemp" style={ this.state.style }>{ lastestRecord }</span>
+		)
+	}
+});
+
 var CityListItem = React.createClass({
 	render: function() {
 
 		return (
             <li className="city">
-                { this.props.data.Name } { this.props.data.Sum } points
-                <Chart chart_data={ this.props.data }/>
+				<div className="">
+					<div className="col-sm-7">
+		                { this.props.data.Name } Chart
+		                <Chart chart_data={ this.props.data }/>
+					</div>
+					<div className="col-sm-2 col-xs-offset-2">
+						<div className="row">
+							<div className="cityNameProfile">
+								{ this.props.data.Name }
+							</div>
+
+							<div className="cityDataTotalRecords">
+								{ this.props.data.Sum } records
+							</div>
+
+							<div className="cityLatestTemp">
+								<CityLatestTemp Items={ this.props.data.Items } />
+							</div>
+						</div>
+					</div>
+				</div>
             </li>
         )
 	}
@@ -36,10 +121,6 @@ var Chart = React.createClass({
 						return false
 					}
 				};
-
-				function convertCelsius(temp) {
-					return parseInt((temp - 273.15).toFixed(2))
-				}
 
 				function chartInit(node_data) {
 					var startDate = (new Date(dataSeries[0].created_at))

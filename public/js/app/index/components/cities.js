@@ -22,7 +22,7 @@ var Chart = React.createClass({
     renderChart: function(node) {
             var dataSeries = this.props.chart_data.Items
 				, chartName = this.props.chart_data.Name
-				, pointLimit = 8500
+				, pointLimit = dataSeries.length
 
 				var node_data = []
 				for(var i = 0; i < pointLimit; i++) {
@@ -30,9 +30,9 @@ var Chart = React.createClass({
 					// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
 					//node_data.push([dateFormatter(ds['created_at']), ds['temp']])
 					var tempVal = !ds['celsius'] || ds['celsius'] == 0 ? convertCelsius(ds['temp']) : ds['celsius']
-					node_data.push(tempVal)
+					node_data.push([dateFormatter(ds['created_at']), tempVal])
 					if(node_data.length == pointLimit) {
-						chartInit()
+						chartInit(node_data)
 						return false
 					}
 				};
@@ -41,7 +41,7 @@ var Chart = React.createClass({
 					return parseInt((temp - 273.15).toFixed(2))
 				}
 
-				function chartInit() {
+				function chartInit(node_data) {
 					var startDate = (new Date(dataSeries[0].created_at))
 
 					$(node).highcharts('StockChart', {
@@ -70,7 +70,7 @@ var Chart = React.createClass({
 								name: chartName,
 								data: node_data,
 								pointStart: (new Date(dataSeries[0].created_at).getTime()),
-								pointInterval: 24 * 3600
+								pointInterval: 24 * 3200
 							}
 						]
 					});

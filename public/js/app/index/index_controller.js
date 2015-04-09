@@ -35,11 +35,17 @@
 		// called when a message is received from the server
 		conn.onmessage = function(e){
 			//log(e)
-			$timeout(function(){
+			// $timeout(function(){
+			// 	var data = JSON.parse(e.data)
+			// 	$scope.city_data.Data.push(data)
+			// 	log($scope.city_data.Data)
+			// }, 0);
+			$scope.$apply(function() {
 				var data = JSON.parse(e.data)
-				log(data)
 				$scope.city_data.Data.push(data)
-			}, 0);
+				log($scope.city_data.Data)
+
+			})
 		};
 
 	}])

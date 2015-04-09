@@ -86,9 +86,11 @@ var CityListItem = React.createClass({
 	render: function() {
 
 		var br_style = { clear: 'both' }
+		log(this.props)
+		log("key debug ------")
 
 		return (
-            <li className="city" key={ this.props.key }>
+            <li className="city" key={ this.props.data.id }>
 				<div className="">
 					<div className="col-sm-7">
 		                { this.props.data.Name } Chart
@@ -120,18 +122,24 @@ var Chart = React.createClass({
     renderChart: function(node) {
             var dataSeries = this.props.chart_data.Items
 				, chartName = this.props.chart_data.Name
-				, pointLimit = dataSeries.length
-				log(chartName)
+
+				if(dataSeries == 0) return false;
+
 				var node_data = []
-				for(var i = 0; i < pointLimit; i++) {
-					var ds = dataSeries[i]
-						, tempVal = !ds['celsius'] || ds['celsius'] == 0 ? convertCelsius(ds['temp']) : ds['celsius']
-					node_data.push([dateFormatter(ds['created_at']), tempVal])
-					if(node_data.length == pointLimit) {
-						chartInit(node_data)
-						return false
-					}
-				};
+
+				async.each(dataSeries, function(item, callback) {
+
+					var tempVal = !item['celsius'] || item['celsius'] == 0 ? convertCelsius(item['temp']) : item['celsius']
+					node_data.push([dateFormatter(item['created_at']), tempVal])
+					callback()
+				}, function(err) {
+					log(chartName)
+					log("--- debug")
+					log(node_data.length)
+					chartInit(node_data)
+				})
+
+
 
 				function chartInit(node_data) {
 					var startDate = (new Date(dataSeries[0].created_at))
@@ -178,12 +186,12 @@ var Chart = React.createClass({
     },
 
 	componentDidUpdate: function() {
-		log('finish render!')
 	},
 
     shouldComponentUpdate: function(nextProps, nextState) {
-		log(nextProps.chart_data == undefined)
-        return nextProps.chart_data.Items.length > 0;
+		log(nextProps.chart_data.Items.length)
+		log("debug shouldComponentUpdate-----")
+        return nextProps.chart_data.Items != undefined && nextProps.chart_data.Items.length > 0;
     },
 
     componentDidUpdate: function(nextProps) {
@@ -216,6 +224,8 @@ var Cities = React.createClass({
 			<ul className="cities">
 				{
 					city_data.map(function(city, index) {
+						console.log(index)
+						city['id'] = index;
 						return <CityListItem data={ city } key={ index } />;
 					})
 				}

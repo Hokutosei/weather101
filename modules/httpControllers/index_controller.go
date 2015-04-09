@@ -56,19 +56,17 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 
 	//	weatherData.GetWeatherData()
 	chanWeather := make(chan database.AggregateWeather)
+
+	// query and analyze weather data
 	go weatherData.GetIndex(chanWeather)
 
+	// long poll query data func and send update
+	go longPollWeather(chanWeather)
+
 	for {
-		// Blocks until a message is read
-		// d := <-chanWeather
 		encodedData, err := json.Marshal(<-chanWeather)
 		_ = err
 		sendAll(encodedData)
-		// for _, item := range d {
-		// 	encodedData, err := json.Marshal(item)
-		// 	_ = err
-		// 	sendAll(encodedData)
-		// }
 	}
 }
 

@@ -156,9 +156,13 @@ var Chart = React.createClass({
 								text: 'temp'
 							}
 						},
-						navigator: {
-						            enabled: false
-						},
+						navigator : {
+			                adaptToUpdatedData: false,
+							enabled: false,
+			                series : {
+			                    data : node_data
+			                }
+			            },
 						scrollbar: {
 							enabled: false
 						},

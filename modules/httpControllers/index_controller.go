@@ -1,6 +1,7 @@
-package http_controllers
+package httpControllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -54,30 +55,21 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 	var weatherData database.WeatherData
 
 	//	weatherData.GetWeatherData()
-	chanWeather := make(chan []database.AggregateWeather)
+	chanWeather := make(chan database.AggregateWeather)
 	go weatherData.GetIndex(chanWeather)
 
 	for {
 		// Blocks until a message is read
-		d := <-chanWeather
-		for _, item := range d {
-			s := fmt.Sprintf("%v", item)
-			data := []byte(s)
-			sendAll(data)
-		}
+		// d := <-chanWeather
+		encodedData, err := json.Marshal(<-chanWeather)
+		_ = err
+		sendAll(encodedData)
+		// for _, item := range d {
+		// 	encodedData, err := json.Marshal(item)
+		// 	_ = err
+		// 	sendAll(encodedData)
+		// }
 	}
-
-	// var weatherData database.WeatherData
-	//
-	// //	weatherData.GetWeatherData()
-	// weathers, err := weatherData.GetIndex()
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	//
-	// response := &WeatherResponse{Status: 200, Data: weathers}
-	// utilities.RespondObjectToJson(w, response)
 }
 
 func sendAll(msg []byte) {
@@ -93,29 +85,3 @@ func sendAll(msg []byte) {
 func MakeConnections() {
 	connections = make(map[*websocket.Conn]bool)
 }
-
-// func wsHandler(w http.ResponseWriter, r *http.Request) {
-// 	// Taken from gorilla's website
-// 	conn, err := websocket.Upgrade(w, r, nil, 1024, 1024)
-// 	if _, ok := err.(websocket.HandshakeError); ok {
-// 		http.Error(w, "Not a websocket handshake", 400)
-// 		return
-// 	} else if err != nil {
-// 		log.Println(err)
-// 		return
-// 	}
-// 	log.Println("Succesfully upgraded connection")
-// 	connections[conn] = true
-//
-// 	for {
-// 		// Blocks until a message is read
-// 		_, msg, err := conn.ReadMessage()
-// 		if err != nil {
-// 			delete(connections, conn)
-// 			conn.Close()
-// 			return
-// 		}
-// 		log.Println(string(msg))
-// 		sendAll(msg)
-// 	}
-// }

@@ -19,7 +19,8 @@ var (
 	// set hours per query day
 	week             time.Duration = 168
 	twoDays          time.Duration = 48
-	hoursPerDayQuery               = week
+	dayHours         time.Duration = 24
+	hoursPerDayQuery               = dayHours * 3
 )
 
 // StartMongoDb start mongodb instance
@@ -89,7 +90,6 @@ func getAllWeatherByCity(name string) {
 	query := bson.M{"name": name}
 	err := c.Find(query).All(&results)
 	_ = err
-	fmt.Println(len(results))
 	fmt.Println(time.Since(start))
 }
 
@@ -104,7 +104,7 @@ func (w *WeatherData) GetWeatherData() {
 }
 
 // GetIndex main index data getter
-func (w *WeatherData) GetIndex(chanWeather chan []AggregateWeather) ([]AggregateWeather, error) {
+func (w *WeatherData) GetIndex(chanWeather chan AggregateWeather) {
 	sc := SessionCopy()
 	c := sc.DB(dbName).C(weatherCollection)
 	defer sc.Close()
@@ -141,14 +141,19 @@ func (w *WeatherData) GetIndex(chanWeather chan []AggregateWeather) ([]Aggregate
 
 	// make temp conversion here!
 	// fmt.Println(result.ConvertKelvinToCent())
-	convertedResult := TemperatureDataConvertion(result)
+	resultChan := make(chan AggregateWeather)
+	go TemperatureDataConvertion(result, resultChan)
 
 	// benchmark how much time it took
 	fmt.Println("aggregate took: ", time.Since(start))
 	if err != nil {
 		fmt.Println(err)
-		return result, err
+		return
 	}
-	chanWeather <- convertedResult
-	return convertedResult, nil
+
+	for {
+		d := <-resultChan
+		chanWeather <- d
+
+	}
 }

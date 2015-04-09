@@ -2,8 +2,9 @@
 	'use strict';
 	var log = function(str) { console.log(str); };
 
-	app.controller('IndexController', ['$scope', 'indexService', function($scope, indexService) {
+	app.controller('IndexController', ['$scope', 'indexService', '$timeout', function($scope, indexService, $timeout) {
 		$scope.didSearched = false
+		$scope.city_data = { Data: [] }
 
 		var init = function(){
 			if($scope.didSearched == true) {
@@ -33,11 +34,12 @@
 		};
 		// called when a message is received from the server
 		conn.onmessage = function(e){
-			log(e)
-			var data = JSON.parse(e.data)
-			// $scope.$apply(function(){
-			// 	$scope.messages.push(e.data);
-			// });
+			//log(e)
+			$timeout(function(){
+				var data = JSON.parse(e.data)
+				log(data)
+				$scope.city_data.Data.push(data)
+			}, 0);
 		};
 
 	}])

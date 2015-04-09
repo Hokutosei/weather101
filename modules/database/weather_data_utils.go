@@ -3,7 +3,7 @@ package database
 import "fmt"
 
 // TemperatureDataConvertion convert weather items
-func TemperatureDataConvertion(aggregatedWeather []AggregateWeather) []AggregateWeather {
+func TemperatureDataConvertion(aggregatedWeather []AggregateWeather, modifiedWeatherData chan AggregateWeather) {
 	for _, item := range aggregatedWeather {
 		go func(item AggregateWeather) {
 			for i := range item.Items {
@@ -15,17 +15,16 @@ func TemperatureDataConvertion(aggregatedWeather []AggregateWeather) []Aggregate
 				resultChan := make(chan int)
 				//n.Celsius = convertKelvin(n.Temp, resultChan)
 				go convertKelvin(n.Temp, resultChan)
-
 				out := <-resultChan
 				n.Celsius = out
 			}
 		}(item)
+		modifiedWeatherData <- item
 	}
-	return aggregatedWeather
 }
 
 func convertKelvin(kelvin float64, resultInt chan int) {
-
+	// return result
 	resultInt <- int(kelvin - 273.15)
 }
 

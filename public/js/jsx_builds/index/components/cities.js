@@ -88,7 +88,7 @@ var CityListItem = React.createClass({displayName: "CityListItem",
 		var br_style = { clear: 'both' }
 
 		return (
-            React.createElement("li", {className: "city"}, 
+            React.createElement("li", {className: "city", key:  this.props.key}, 
 				React.createElement("div", {className: ""}, 
 					React.createElement("div", {className: "col-sm-7"}, 
 		                 this.props.data.Name, " Chart", 
@@ -121,13 +121,11 @@ var Chart = React.createClass({displayName: "Chart",
             var dataSeries = this.props.chart_data.Items
 				, chartName = this.props.chart_data.Name
 				, pointLimit = dataSeries.length
-
+				log(chartName)
 				var node_data = []
 				for(var i = 0; i < pointLimit; i++) {
 					var ds = dataSeries[i]
-					// node_data.push([ds['temp'], ds['created_at'].slice(0, 19)])
-					//node_data.push([dateFormatter(ds['created_at']), ds['temp']])
-					var tempVal = !ds['celsius'] || ds['celsius'] == 0 ? convertCelsius(ds['temp']) : ds['celsius']
+						, tempVal = !ds['celsius'] || ds['celsius'] == 0 ? convertCelsius(ds['temp']) : ds['celsius']
 					node_data.push([dateFormatter(ds['created_at']), tempVal])
 					if(node_data.length == pointLimit) {
 						chartInit(node_data)
@@ -162,6 +160,9 @@ var Chart = React.createClass({displayName: "Chart",
 						series: [
 							{
 								name: chartName,
+								dataGrouping: {
+									enabled: true
+								},
 								data: node_data,
 								pointStart: (new Date(dataSeries[0].created_at).getTime()),
 								pointInterval: 24 * 3200
@@ -181,6 +182,7 @@ var Chart = React.createClass({displayName: "Chart",
 	},
 
     shouldComponentUpdate: function(nextProps, nextState) {
+		log(nextProps.chart_data == undefined)
         return nextProps.chart_data.Items.length > 0;
     },
 

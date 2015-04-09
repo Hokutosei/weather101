@@ -20,7 +20,7 @@ var (
 	week             time.Duration = 168
 	twoDays          time.Duration = 48
 	dayHours         time.Duration = 24
-	hoursPerDayQuery               = dayHours * 2
+	hoursPerDayQuery               = dayHours
 )
 
 // StartMongoDb start mongodb instance

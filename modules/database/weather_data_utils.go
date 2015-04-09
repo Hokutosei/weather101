@@ -15,6 +15,7 @@ func TemperatureDataConvertion(aggregatedWeather []AggregateWeather) []Aggregate
 				resultChan := make(chan int)
 				//n.Celsius = convertKelvin(n.Temp, resultChan)
 				go convertKelvin(n.Temp, resultChan)
+
 				out := <-resultChan
 				n.Celsius = out
 			}
@@ -24,12 +25,8 @@ func TemperatureDataConvertion(aggregatedWeather []AggregateWeather) []Aggregate
 }
 
 func convertKelvin(kelvin float64, resultInt chan int) {
-	result := int(kelvin - 273.15)
-	if result == 0 {
-		panic("error")
-	}
-	// return result
-	resultInt <- result
+
+	resultInt <- int(kelvin - 273.15)
 }
 
 // ConvertKelvinToCent converts current temperature

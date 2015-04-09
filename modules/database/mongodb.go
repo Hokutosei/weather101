@@ -17,16 +17,15 @@ var (
 	weatherCollection = "weather"
 
 	// set hours per query day
-	week             time.Duration = 24 * 7
-	twoDays          time.Duration = 24 * 2
-	hoursPerDay      time.Duration = 24
-	hoursPerDayQuery time.Duration = hoursPerDay * 5
+	week             time.Duration = 168
+	twoDays          time.Duration = 48
+	hoursPerDayQuery               = week
 )
 
 // StartMongoDb start mongodb instance
 func StartMongoDb() {
 	//currentSession, err := mgo.Dial("107.167.180.219:27017")
-	currentSession, err := mgo.Dial("104.155.230.215:27020")
+	currentSession, err := mgo.Dial("104.155.227.195:27020")
 	if err != nil {
 		log.Println("err connecting to mongodb!")
 		log.Println("error: ", err)

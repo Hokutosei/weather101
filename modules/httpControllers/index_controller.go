@@ -61,11 +61,12 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 	go weatherData.GetIndex(chanWeather)
 
 	// long poll query data func and send update
-	go longPollWeather(chanWeather)
+	//go longPollWeather(chanWeather)
 
 	for {
 		encodedData, err := json.Marshal(<-chanWeather)
 		_ = err
+		fmt.Println("sending data...")
 		sendAll(encodedData)
 	}
 }

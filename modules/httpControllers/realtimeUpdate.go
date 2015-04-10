@@ -21,8 +21,14 @@ func longPollWeather(longPollChan chan database.AggregateWeather) {
 		// query and analyze weather data
 		go weatherData.GetIndex(chanWeather)
 
-		out := <-chanWeather
+		go func() {
+			for {
 
-		longPollChan <- out
+				out := <-chanWeather
+
+				longPollChan <- out
+
+			}
+		}()
 	}
 }

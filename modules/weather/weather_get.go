@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	apiUrl      = "http://api.openweathermap.org/data/2.5/weather?q="
+	apiURL      = "http://api.openweathermap.org/data/2.5/weather?q="
 	delay       = 59
 	loopCounter = 0
 )
@@ -24,10 +24,10 @@ func getWeather(city ...string) {
 	for _, name := range city {
 		go func(name string) {
 			start := time.Now()
-			cityUrl := fmt.Sprintf("%v%v", apiUrl, name)
+			cityURL := fmt.Sprintf("%v%v", apiURL, name)
 
 			// http request
-			response, err := httpGet(cityUrl)
+			response, err := httpGet(cityURL)
 			if err != nil {
 				fmt.Println("has error: ", name)
 				return
@@ -51,7 +51,12 @@ func getWeather(city ...string) {
 
 			// fmt.Println(dat) # debug code
 			tempStr := fmt.Sprintf("temp: %v C ", utilities.ConvertCelsius(dat.Main.Temp))
-			weatherDescription := dat.Weather[0].Description
+			var weatherDescription string
+			if len(dat.Weather) >= 1 {
+				weatherDescription = dat.Weather[0].Description
+			} else {
+				weatherDescription = "weather description NIL"
+			}
 
 			// output message
 			toPrint := []string{

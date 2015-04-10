@@ -19,6 +19,9 @@ function tempColor(temp) {
 		case (temp >= 6 && temp <= 8):
 			css.color = '#8ac6ef'
 			break;
+		case (temp >= 9 && temp <= 15):
+			css.color = '#66b266'
+			break;
 		case (temp >= 29 && temp <= 33):
 			css.color = '#ffb732'
 			break;
@@ -86,8 +89,6 @@ var CityListItem = React.createClass({
 	render: function() {
 
 		var br_style = { clear: 'both' }
-		log(this.props)
-		log("key debug ------")
 
 		return (
             <li className="city" key={ this.props.data.id }>
@@ -133,9 +134,6 @@ var Chart = React.createClass({
 					node_data.push([dateFormatter(item['created_at']), tempVal])
 					callback()
 				}, function(err) {
-					log(chartName)
-					log("--- debug")
-					log(node_data.length)
 					chartInit(node_data)
 				})
 
@@ -186,15 +184,12 @@ var Chart = React.createClass({
     },
 
     componentWillReceiveProps: function(nextProps) {
-
     },
 
 	componentDidUpdate: function() {
 	},
 
     shouldComponentUpdate: function(nextProps, nextState) {
-		log(nextProps.chart_data.Items.length)
-		log("debug shouldComponentUpdate-----")
         return nextProps.chart_data.Items != undefined && nextProps.chart_data.Items.length > 0;
     },
 
@@ -216,6 +211,9 @@ var Cities = React.createClass({
 	},
 
 	componentWillReceiveProps: function(nextProps) {
+		log(nextProps)
+		log("componentWillReceiveProps....")
+
 		this.setState({ Data: nextProps })
 	},
 
@@ -224,11 +222,16 @@ var Cities = React.createClass({
 		if(this.props.Data) {
 			city_data = this.props.Data
 		}
+
+		// var childrenGraph = city_data.map(function(item, i) {
+		// 	city['id'] = i;
+		// 	return React.addons.cloneWithProps(item, )
+		// })
+
 		return (
 			<ul className="cities">
 				{
 					city_data.map(function(city, index) {
-						console.log(index)
 						city['id'] = index;
 						return <CityListItem data={ city } key={ index } />;
 					})

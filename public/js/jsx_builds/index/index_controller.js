@@ -24,9 +24,9 @@
 		}
 		init()
 		$scope.messages = []
-		var host = window.location.hostname
+		var host = window.location.host
 		var conn = new WebSocket("ws://"+ host +"/get_index");
-		
+
 		// called when the server closes the connection
 		conn.onclose = function(e) {
 			$scope.$apply(function(){

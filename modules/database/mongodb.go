@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"weather101/modules/config"
 	"weather101/modules/utilities"
 
 	mgo "gopkg.in/mgo.v2"
@@ -21,12 +22,27 @@ var (
 	twoDays          time.Duration = 48
 	dayHours         time.Duration = 24
 	hoursPerDayQuery               = dayHours * 2
+
+	mongodbClusterKey string = "mongodb_cluster1"
 )
+
+// GetMongodbCluster retrieve mongodb cluster host
+func GetMongodbCluster(host chan string) {
+	mongodbCluster, err := config.EtcdRawGetValue(mongodbClusterKey)
+	if err != nil {
+		panic(err)
+	}
+
+	host <- mongodbCluster
+}
 
 // StartMongoDb start mongodb instance
 func StartMongoDb() {
 	//currentSession, err := mgo.Dial("107.167.180.219:27017")
-	currentSession, err := mgo.Dial("104.155.227.195:27020")
+	mongodbCluster := make(chan string)
+	go GetMongodbCluster(mongodbCluster)
+
+	currentSession, err := mgo.Dial(<-mongodbCluster)
 	if err != nil {
 		log.Println("err connecting to mongodb!")
 		log.Println("error: ", err)

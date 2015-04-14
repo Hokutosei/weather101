@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"weather101/modules/config"
 	"weather101/modules/database"
 	"weather101/modules/weather"
 )
@@ -21,6 +22,8 @@ func main() {
 	go database.StartRedis()
 
 	go weather.StartGettingWeather()
+
+	go config.StartEtcd()
 
 	fmt.Println("server is listening to -->>", serverPort)
 	err := http.ListenAndServe(serverPort, nil)

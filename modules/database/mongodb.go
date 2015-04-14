@@ -42,7 +42,8 @@ func StartMongoDb() {
 	mongodbCluster := make(chan string)
 	go GetMongodbCluster(mongodbCluster)
 
-	currentSession, err := mgo.Dial(<-mongodbCluster)
+	host := <-mongodbCluster
+	currentSession, err := mgo.Dial(host)
 	if err != nil {
 		log.Println("err connecting to mongodb!")
 		log.Println("error: ", err)

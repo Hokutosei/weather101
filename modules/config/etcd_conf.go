@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/coreos/go-etcd/etcd"
 )
 
 var (
-	machines = []string{"http://127.0.0.1:2379"}
+	osMachine string
+
+	machines []string
 )
 
 // EtcdResponse struct data from etcd response
@@ -23,9 +26,26 @@ type EtcdResponse struct {
 	} `json:"node"`
 }
 
+// getOsMachinePrivateIP retrieve os machine private IP
+func getOsMachinePrivateIP() {
+	var envVar string
+	osEnvStr := []string{"COREOS_PRIVATE_IPV4", "LOCALHOST_IP"}
+	for _, env := range osEnvStr {
+		e := os.Getenv(env)
+		if e != "" {
+			envVar = e
+			break
+		}
+	}
+
+	machines = append(machines, fmt.Sprintf("http://%v:2379", envVar))
+	fmt.Println("machine IP: ", machines)
+}
+
 // StartEtcd beginning connection
 func StartEtcd() {
-	machines := []string{"http://127.0.0.1:2379"}
+	getOsMachinePrivateIP()
+
 	client := etcd.NewClient(machines)
 
 	if _, err := client.Set("/server_alive_w101", "alive", 0); err != nil {
@@ -59,5 +79,4 @@ func EtcdRawGetValue(key string) (string, error) {
 	}
 
 	return data.Node.Value, nil
-
 }

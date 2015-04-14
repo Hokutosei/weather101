@@ -5,11 +5,24 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"strings"
 	"time"
+
+	"weather101/modules/config"
 )
 
 var (
 	pool *redis.Pool
+
+	redisKey string = "redisHost"
 )
+
+// getRedisHost redis host getter
+func getRedisHost(redisHost chan string) {
+	redis, err := config.EtcdRawGetValue(redisKey)
+	if err != nil {
+		panic(err)
+	}
+	redisHost <- redis
+}
 
 // StartRedis make connection to redis
 func StartRedis() {
@@ -19,11 +32,15 @@ func StartRedis() {
 }
 
 func newPool() *redis.Pool {
+	redisHost := make(chan string)
+	go getRedisHost(redisHost)
+
+	host := <-redisHost
 	return &redis.Pool{
 		MaxIdle:     3,
 		IdleTimeout: 10 * time.Second,
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", "130.211.255.234:6379")
+			c, err := redis.Dial("tcp", host)
 			if err != nil {
 				return nil, err
 			}

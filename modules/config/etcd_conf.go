@@ -28,7 +28,8 @@ type EtcdResponse struct {
 
 // getOsMachinePrivateIP retrieve os machine private IP
 func getOsMachinePrivateIP() {
-	var envVar string
+	var envVar string = "127.0.0.1"
+
 	osEnvStr := []string{"COREOS_PRIVATE_IPV4", "LOCALHOST_IP"}
 	for _, env := range osEnvStr {
 		e := os.Getenv(env)

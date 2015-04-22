@@ -7,7 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	_ "time"
+	"sync"
+	"time"
 	"weather101/modules/config"
 	"weather101/modules/database"
 	"weather101/modules/utilities"
@@ -25,7 +26,7 @@ var (
 	// set hours per query day
 
 	mongodbClusterKey string = "mongodb_cluster1"
-	selectLimit       int    = 3000
+	selectLimit       int    = 100000
 )
 
 // GetMongodbCluster retrieve mongodb cluster host
@@ -40,7 +41,6 @@ func GetMongodbCluster(host chan string) {
 
 // StartMongoDb start mongodb instance
 func StartMongoDb() {
-	//currentSession, err := mgo.Dial("107.167.180.219:27017")
 	mongodbCluster := make(chan string)
 	go GetMongodbCluster(mongodbCluster)
 
@@ -62,6 +62,7 @@ func SessionCopy() *mgo.Session {
 
 // startMigrate get all weather data records
 func startMigrate() {
+	start := time.Now()
 	sc := SessionCopy()
 	c := sc.DB(dbName).C(weatherCollection)
 	defer sc.Close()
@@ -72,6 +73,8 @@ func startMigrate() {
 	_ = err
 	fmt.Println("got!: ", len(weather))
 	migrateLoop(weather...)
+
+	fmt.Println("startMigrate and migrateLoop took: ", time.Since(start))
 }
 
 // DataPoints structure for post data
@@ -91,23 +94,34 @@ type DataPoint struct {
 // migrateLoop loop through all items
 func migrateLoop(weather ...database.WeatherData) {
 	var dataPoints DataPoints
-	fmt.Println(len(weather))
-	fmt.Println(len(dataPoints.DataPoint))
+	var wg sync.WaitGroup
+
 	for _, item := range weather {
-		var points [][]interface{}
-		fmt.Println(item.CreatedAt)
+		wg.Add(1)
+		go func(item database.WeatherData) {
+			fmt.Println(item)
+			if item.Name == "" {
+				wg.Done()
+				return
+			}
+			var points [][]interface{}
+			createdAt := item.CreatedAt.UnixNano() / 1000000
 
-		points = append(points, []interface{}{item.CreatedAt.UnixNano() / 1000000, utilities.ConvertCelsius(item.Main.Temp), item.Name})
+			points = append(points, []interface{}{createdAt, utilities.ConvertCelsius(item.Main.Temp), item.Name})
 
-		item := DataPoint{
-			Columns:   []string{"time", "temperature", "city"},
-			Name:      "weather101",
-			Fields:    points,
-			Timestamp: item.CreatedAt.UnixNano() / 1000000,
-			Precision: "s",
-		}
-		dataPoints.DataPoint = append(dataPoints.DataPoint, item)
+			pointItem := DataPoint{
+				Columns:   []string{"time", "temperature", "city"},
+				Name:      item.Name,
+				Fields:    points,
+				Timestamp: createdAt,
+				Precision: "s",
+			}
+			dataPoints.DataPoint = append(dataPoints.DataPoint, pointItem)
+			wg.Done()
+		}(item)
 	}
+	wg.Wait()
+	fmt.Println("will bulk insert")
 	BulkInsertToInfluxDb(dataPoints)
 }
 
@@ -134,7 +148,7 @@ func BulkInsertToInfluxDb(weather DataPoints) {
 	defer resp.Body.Close()
 
 	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
+	// fmt.Println("response Headers:", resp.Header)
 	body, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println("response Body:", string(body))
 }

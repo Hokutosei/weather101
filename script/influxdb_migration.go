@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	_ "time"
 	"weather101/modules/config"
 	"weather101/modules/database"
 	"weather101/modules/utilities"
@@ -67,7 +68,7 @@ func startMigrate() {
 
 	fmt.Println("will query...")
 	var weather []database.WeatherData
-	err := c.Find(bson.M{}).Limit(selectLimit).All(&weather)
+	err := c.Find(bson.M{}).Sort("-_id").Limit(selectLimit).All(&weather)
 	_ = err
 	fmt.Println("got!: ", len(weather))
 	migrateLoop(weather...)
@@ -80,9 +81,11 @@ type DataPoints struct {
 
 // DataPoint struct to use in request
 type DataPoint struct {
-	Columns []string        `json:"columns"`
-	Name    string          `json:"name"`
-	Points  [][]interface{} `json:"points"`
+	Columns   []string        `json:"columns"`
+	Name      string          `json:"name"`
+	Fields    [][]interface{} `json:"points"`
+	Timestamp interface{}     `json:"timestamp"`
+	Precision string          `json:"precision"`
 }
 
 // migrateLoop loop through all items
@@ -92,13 +95,16 @@ func migrateLoop(weather ...database.WeatherData) {
 	fmt.Println(len(dataPoints.DataPoint))
 	for _, item := range weather {
 		var points [][]interface{}
+		fmt.Println(item.CreatedAt)
 
-		points = append(points, []interface{}{utilities.ConvertCelsius(item.Main.Temp), item.CreatedAt.Unix(), item.Name})
+		points = append(points, []interface{}{item.CreatedAt.UnixNano() / 1000000, utilities.ConvertCelsius(item.Main.Temp), item.Name})
 
 		item := DataPoint{
-			Columns: []string{"temperature", "time", "City"},
-			Name:    "weather101",
-			Points:  points,
+			Columns:   []string{"time", "temperature", "city"},
+			Name:      "weather101",
+			Fields:    points,
+			Timestamp: item.CreatedAt.UnixNano() / 1000000,
+			Precision: "s",
 		}
 		dataPoints.DataPoint = append(dataPoints.DataPoint, item)
 	}

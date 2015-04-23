@@ -39,7 +39,7 @@ func getOsMachinePrivateIP() {
 		}
 	}
 
-	machines = append(machines, fmt.Sprintf("http://%v:2379", envVar))
+	machines = append(machines, fmt.Sprintf("http://%v:4001", envVar))
 	fmt.Println("machine IP: ", machines)
 }
 

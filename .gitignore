@@ -4,3 +4,4 @@ weather101
 .DS_Store
 public/js/jsx_builds/.module-cache/
 default.etcd
+public/jsx/jsx_builds/.module-cache/

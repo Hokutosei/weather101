@@ -72,7 +72,14 @@ func (w *WeatherData) SaveAndPrint(startTime time.Time, toPrint ...string) (bool
 		return false, err
 	}
 
+	influxMsg, err := w.SaveToInfluxDB()
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+
 	endTime := fmt.Sprintf("took: %v", time.Since(startTime))
+	toPrint = append(toPrint, influxMsg)
 	toPrint = append(toPrint, endTime)
 	utilities.InlinePrint(toPrint...)
 

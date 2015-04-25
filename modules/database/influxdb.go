@@ -72,7 +72,8 @@ func influxDbURLConstruct() string {
 	getURL := make(chan string)
 	go influxDbConfig(getURL)
 
-	strURL := fmt.Sprintf("http://%s:8086/db/weather101/series", <-getURL)
+	url := <-getURL
+	strURL := fmt.Sprintf("http://%s:8086/db/weather101/series", url)
 	fmt.Println(strURL)
 
 	return strURL

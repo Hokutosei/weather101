@@ -73,13 +73,13 @@ func influxDbURLConstruct() string {
 	go influxDbConfig(getURL)
 
 	strURL := fmt.Sprintf("http://%s:8086/db/weather101/series", <-getURL)
+	fmt.Println(strURL)
 
 	return strURL
 }
 
 // BulkInsertToInfluxDb builk insert to influxdb
 func BulkInsertToInfluxDb(weather DataPoints) (string, error) {
-	// url := "http://107.167.180.219:8086/db/weather101/series"
 	url := influxDbURLConstruct()
 
 	mJSON, _ := json.Marshal(weather.DataPoint)

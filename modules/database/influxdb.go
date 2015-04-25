@@ -32,13 +32,13 @@ type DataPoint struct {
 }
 
 // influxDbConfig influxdb config getter
-func influxDbConfig(key chan string) (string, error) {
+func influxDbConfig(key chan string) {
 	value, err := config.EtcdRawGetValue(influxdbAddress)
 	if err != nil {
-		return "", err
+		key <- "error.com"
 	}
 
-	return value, err
+	key <- value
 }
 
 // SaveToInfluxDB loop through all items
@@ -72,9 +72,7 @@ func influxDbURLConstruct() string {
 	getURL := make(chan string)
 	go influxDbConfig(getURL)
 
-	url := <-getURL
-	strURL := fmt.Sprintf("http://%s:8086/db/weather101/series", url)
-	fmt.Println(strURL)
+	strURL := fmt.Sprintf("http://%s:8086/db/weather101/series", <-getURL)
 
 	return strURL
 }

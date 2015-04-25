@@ -34,9 +34,16 @@ func getWeather(city ...string) {
 			}
 			defer response.Body.Close()
 
+			// error handler if HTTP Get is not 200
+			if response.StatusCode != 200 {
+				fmt.Println("openweather get err on city: ", name)
+				return
+			}
+
 			// read response
 			contents, err := ioutil.ReadAll(response.Body)
 			if err != nil {
+				fmt.Println(contents)
 				fmt.Println(err)
 				return
 			}

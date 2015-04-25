@@ -15,11 +15,12 @@ func httpGet(city_url string) (*http.Response, error) {
 
 	response, err := client.Get(city_url)
 	if err != nil {
-		// do better error handling here
+		// do better error handlin	g here
 		//panic(err)
-		fmt.Println(err)
+		fmt.Println("city: ", city_url, ": err: ", err)
 		var x *http.Response
 		return x, err
 	}
+
 	return response, nil
 }

@@ -9,7 +9,12 @@ import (
 	"net/http"
 	_ "time"
 
+	"weather101/modules/config"
 	"weather101/modules/utilities"
+)
+
+var (
+	influxdbAddress = "influxdbAddr"
 )
 
 // DataPoints structure for post data
@@ -24,6 +29,16 @@ type DataPoint struct {
 	Fields    [][]interface{} `json:"points"`
 	Timestamp interface{}     `json:"timestamp"`
 	Precision string          `json:"precision"`
+}
+
+// influxDbConfig influxdb config getter
+func influxDbConfig(key chan string) (string, error) {
+	value, err := config.EtcdRawGetValue(influxdbAddress)
+	if err != nil {
+		return "", err
+	}
+
+	return value, err
 }
 
 // SaveToInfluxDB loop through all items
@@ -52,9 +67,20 @@ func (weather *WeatherData) SaveToInfluxDB() (string, error) {
 	return msg, err
 }
 
+// influxDbURLConstruct return influxdb url
+func influxDbURLConstruct() string {
+	getURL := make(chan string)
+	go influxDbConfig(getURL)
+
+	strURL := fmt.Sprintf("http://%s:8086/db/weather101/series", <-getURL)
+
+	return strURL
+}
+
 // BulkInsertToInfluxDb builk insert to influxdb
 func BulkInsertToInfluxDb(weather DataPoints) (string, error) {
-	url := "http://107.167.180.219:8086/db/weather101/series"
+	// url := "http://107.167.180.219:8086/db/weather101/series"
+	url := influxDbURLConstruct()
 
 	mJSON, _ := json.Marshal(weather.DataPoint)
 	contentReader := bytes.NewReader(mJSON)
@@ -75,8 +101,5 @@ func BulkInsertToInfluxDb(weather DataPoints) (string, error) {
 	defer resp.Body.Close()
 
 	msg := fmt.Sprintf("influxDB response Status: %s", resp.Status)
-	// fmt.Println("response Headers:", resp.Header)
-	// body, _ := ioutil.ReadAll(resp.Body)
-	// fmt.Println("response Body:", string(body))
 	return msg, nil
 }

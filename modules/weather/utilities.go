@@ -6,8 +6,9 @@ import (
 	"time"
 )
 
+// httpGet main func for http get
 func httpGet(city_url string) (*http.Response, error) {
-	timeout := time.Duration(5 * time.Second)
+	timeout := time.Duration(10 * time.Second)
 	client := http.Client{
 		Timeout: timeout,
 	}

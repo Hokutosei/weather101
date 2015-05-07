@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	_ "net/http"
+	"sync"
 	"time"
 
 	"weather101/modules/database"
@@ -13,7 +14,7 @@ import (
 
 var (
 	apiURL      = "http://api.openweathermap.org/data/2.5/weather?q="
-	delay       = 59
+	delay       = 3
 	loopCounter = 0
 )
 
@@ -21,7 +22,9 @@ var (
 // that get all weather data
 func getWeather(city ...string) {
 	fmt.Println(city)
+	var wg sync.WaitGroup
 	for _, name := range city {
+		wg.Add(1)
 		go func(name string) {
 			start := time.Now()
 			cityURL := fmt.Sprintf("%v%v", apiURL, name)
@@ -32,6 +35,7 @@ func getWeather(city ...string) {
 				fmt.Println("has error: ", name)
 				return
 			}
+			defer wg.Done()
 			defer response.Body.Close()
 
 			// read response
@@ -77,6 +81,8 @@ func getWeather(city ...string) {
 
 		}(name)
 	}
+	wg.Wait()
+	fmt.Println("done fetching!")
 }
 
 // mainWeatherGetter call main event weather loop

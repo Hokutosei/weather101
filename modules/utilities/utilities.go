@@ -12,11 +12,14 @@ var (
 	paddingMinLen         = 5
 )
 
+// ConvertCelsius convert temp to celsius
 func ConvertCelsius(temp float64) int {
 	result := temp - kelvin
 	return int(result)
 }
 
+// InlinePrint print messages inline,
+// toPrint message slice
 func InlinePrint(toPrint ...string) {
 	var printStr string
 	for _, str := range toPrint {
@@ -26,7 +29,7 @@ func InlinePrint(toPrint ...string) {
 	fmt.Println("---------------->> ", printStr)
 }
 
-// transform string for aesthetic and readable in CLI
+// StringifyAndPadding transform string for aesthetic and readable in CLI
 func StringifyAndPadding(str interface{}) string {
 	var paddedStr string
 
@@ -47,6 +50,7 @@ func StringifyAndPadding(str interface{}) string {
 	return paddedStr
 }
 
+// RespondObjectToJson send response objects/structs to json
 func RespondObjectToJson(w http.ResponseWriter, object interface{}) {
 	js, err := json.Marshal(object)
 	if err != nil {

@@ -83,7 +83,9 @@ func getWeather(city ...string) {
 		}(name)
 	}
 	wg.Wait()
-	fmt.Println("done fetching!")
+
+	// extra get modules
+	//  get peso currency
 	currency.GetPeso()
 }
 

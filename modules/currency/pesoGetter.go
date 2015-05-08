@@ -40,6 +40,6 @@ func GetPeso() {
 	if err != nil {
 		fmt.Println("pesocurrency not saved: ", err)
 	}
-	fmt.Println(saved)
 
+	_ = saved
 }

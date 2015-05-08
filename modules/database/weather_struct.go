@@ -65,3 +65,12 @@ type AggregateWeather struct {
 type Cities struct {
 	Name string `bson:"_id"`
 }
+
+// {"JPY_PHP":{"val":0.373}}
+// PesoToYen struct to use for peso to yen conversion
+type PesoToYen struct {
+	CreatedAt time.Time `bson:"created_at" json:"created_at"`
+	JPY_PHP   struct {
+		Val float64 `json: "val"`
+	} `json: "JpyPhp"`
+}

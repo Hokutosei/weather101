@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 var (
@@ -61,6 +62,24 @@ func RespondObjectToJson(w http.ResponseWriter, object interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
+}
+
+// HTTPGet an http GET request with timeout
+func HTTPGet(url string) (*http.Response, error) {
+	timeout := time.Duration(5 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+
+	response, err := client.Get(url)
+	if err != nil {
+		// do better error handling here
+		//panic(err)
+		fmt.Println(err)
+		var x *http.Response
+		return x, err
+	}
+	return response, nil
 }
 
 //func ReadRequestPostRequest(r *http.Request) (database.UserEditParams, error) {

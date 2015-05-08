@@ -8,13 +8,14 @@ import (
 	"sync"
 	"time"
 
+	"weather101/modules/currency"
 	"weather101/modules/database"
 	"weather101/modules/utilities"
 )
 
 var (
 	apiURL      = "http://api.openweathermap.org/data/2.5/weather?q="
-	delay       = 3
+	delay       = 59
 	loopCounter = 0
 )
 
@@ -83,6 +84,7 @@ func getWeather(city ...string) {
 	}
 	wg.Wait()
 	fmt.Println("done fetching!")
+	currency.GetPeso()
 }
 
 // mainWeatherGetter call main event weather loop
@@ -103,6 +105,7 @@ func StartGettingWeather() {
 	// get some initial data from start
 	// mainWeatherGetter()
 
+	// periodical main loop for GET && Save weather
 	for i := range time.Tick(time.Second * time.Duration(delay)) {
 		_ = i
 		loopCounter++

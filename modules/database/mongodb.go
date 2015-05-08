@@ -14,8 +14,9 @@ import (
 var (
 	session *mgo.Session
 
-	dbName            = "weather_report101"
-	weatherCollection = "weather"
+	dbName              = "weather_report101"
+	weatherCollection   = "weather"
+	pesoToYenCollection = "peso"
 
 	// set hours per query day
 	week             time.Duration = 168
@@ -83,6 +84,26 @@ func (w *WeatherData) SaveAndPrint(startTime time.Time, toPrint ...string) (bool
 	toPrint = append(toPrint, endTime)
 	utilities.InlinePrint(toPrint...)
 
+	return true, nil
+}
+
+// PesoSaveAndPrint save to mongodb and print output
+func (p *PesoToYen) PesoSaveAndPrint(startTime time.Time, toPrint ...string) (bool, error) {
+	sc := SessionCopy()
+	c := sc.DB(dbName).C(pesoToYenCollection)
+	defer sc.Close()
+
+	p.CreatedAt = time.Now()
+	err := c.Insert(p)
+	if err != nil {
+		fmt.Println("err in Insert: ", err)
+		return false, err
+	}
+
+	endTime := fmt.Sprintf("took: %v", time.Since(startTime))
+	toPrint = append(toPrint, endTime)
+
+	utilities.InlinePrint(toPrint...)
 	return true, nil
 }
 

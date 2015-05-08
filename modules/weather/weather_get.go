@@ -27,6 +27,7 @@ func getWeather(city ...string) {
 	for _, name := range city {
 		wg.Add(1)
 		go func(name string) {
+			defer wg.Done()
 			start := time.Now()
 			cityURL := fmt.Sprintf("%v%v", apiURL, name)
 
@@ -36,7 +37,6 @@ func getWeather(city ...string) {
 				fmt.Println("has error: ", name)
 				return
 			}
-			defer wg.Done()
 			defer response.Body.Close()
 
 			// read response

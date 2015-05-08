@@ -33,7 +33,7 @@ func GetPeso() {
 	}
 
 	toPrint := []string{
-		fmt.Sprintf("peso -> yen: %v", pesoCurrency.JPY_PHP.Val),
+		fmt.Sprintf("yen -> peso: %v", pesoCurrency.JPY_PHP.Val),
 	}
 
 	saved, err := pesoCurrency.PesoSaveAndPrint(start, toPrint...)

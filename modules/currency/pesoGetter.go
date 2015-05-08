@@ -19,6 +19,7 @@ func GetPeso() {
 		fmt.Println("err getpeso, ", err)
 		return
 	}
+	defer resp.Body.Close()
 
 	contents, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
